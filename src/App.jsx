@@ -412,6 +412,10 @@ function QuizScreen() {
   });
   const completed = useRef(false);
   const question = questions.questions[index];
+
+  console.log(question.options)
+  question.options = shuffle(question.options)
+  console.log(question.options)
   const selected =
     answer.questionId === question.id ? answer.value : null;
   const remaining =
@@ -438,7 +442,7 @@ function QuizScreen() {
       1000,
     );
     return () => window.clearTimeout(timeout);
-  }, [hasAnswered, question.id, question.seconds, remaining]);
+  }, [hasAnswered]);
 
   function finishQuiz(finalScore) {
     if (completed.current) return;
@@ -460,6 +464,14 @@ function QuizScreen() {
     }
     if (finalAnswer === question.correct) setScore(updatedScore);
     setIndex((current) => current + 1);
+  }
+
+  function shuffle(options){
+    const pomjesano = options
+  .map(({id, q}) => ({ id, q }))
+  .sort(() => Math.random() - 0.5)
+    //console.log(pomjesano)
+  return pomjesano
   }
 
   return (
@@ -484,7 +496,7 @@ function QuizScreen() {
         <div className={stil.optionList}>
           {question.options.map((option, optionIndex) => {
             const isSelected = selected === optionIndex;
-            const isCorrect = optionIndex === question.correct;
+            const isCorrect = option.id === question.correct;
             let optionClass = stil.option;
             if (hasAnswered && isCorrect) {
               optionClass += ` ${stil.optionCorrect}`;
@@ -497,7 +509,7 @@ function QuizScreen() {
                 aria-pressed={isSelected}
                 className={optionClass}
                 disabled={hasAnswered}
-                key={option}
+                key={option.id}
                 onClick={() =>
                   setAnswer({ questionId: question.id, value: optionIndex })
                 }
@@ -506,7 +518,7 @@ function QuizScreen() {
                 <span className={stil.optionLetter}>
                   {String.fromCharCode(65 + optionIndex)}
                 </span>
-                <span>{option}</span>
+                <span>{option.q}</span>
               </button>
             );
           })}
