@@ -1,0 +1,59 @@
+.zaglavlje {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.nadnaslov {
+  color: var(--ink-300);
+  text-transform: uppercase;
+}
+
+.zaglavlje .small {
+  color: var(--ink-200);
+}
+
+.kartica {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border-100);
+  border-radius: var(--radius-lg);
+  background: var(--surface-200);
+}
+
+.popis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-200);
+}
+
+.popis code {
+  font-family: var(--font-mono);
+  color: var(--ink-100);
+}
+
+/* Privremeni gumb do Koraka 2, kad stize komponenta Button. */
+.gumb {
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--brand-500);
+  color: var(--ink-on-brand);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gumb:active {
+  background: var(--brand-600);
+}
+
+.podnozje {
+  color: var(--ink-300);
+  text-transform: uppercase;
+}

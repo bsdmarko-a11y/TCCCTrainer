@@ -1,0 +1,171 @@
+/* GENERIRANO iz design/tokens.json - ne uredjuj rucno. */
+/* TCCC Trainer, verzija tokena 2 */
+
+:root,
+[data-theme="dark"] {
+  --surface-000: #0a0b0c;
+  --surface-100: #121415;
+  --surface-200: #1b1e1f;
+  --surface-300: #282c2d;
+  --border-100: #6b7173;
+  --ink-100: #f2f1ef;
+  --ink-200: #b3b7b8;
+  --ink-300: #8b9091;
+  --brand-500: #e46c23;
+  --brand-600: #d05f1c;
+  --brand-400: #f09055;
+  --ink-on-brand: #14160f;
+  --focus-ring: #f2f1ef;
+  --brand-grey: #55595a;
+  --signal-critical: #f04e40;
+  --signal-warn: #e8b64a;
+  --signal-ok: #5fb87a;
+  --fill-critical: #280d0b;
+  --fill-ok: #15291c;
+  --overlay-600: #0a0b0ce6;
+  --shadow-nav: 0 -8px 24px rgba(0, 0, 0, 0.55);
+  --shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="night"] {
+  --surface-000: #000000;
+  --surface-100: #0a0302;
+  --surface-200: #150604;
+  --surface-300: #220a06;
+  --border-100: #a33a28;
+  --ink-100: #ff5f45;
+  --ink-200: #d94a33;
+  --ink-300: #cf4835;
+  --brand-500: #6b1a06;
+  --brand-600: #4d1104;
+  --brand-400: #e8705c;
+  --ink-on-brand: #ffa07a;
+  --focus-ring: #ff8d7c;
+  --brand-grey: #55595a;
+  --signal-critical: #ff3b22;
+  --signal-warn: #ff6a3a;
+  --signal-ok: #ff9b86;
+  --fill-critical: #2a0603;
+  --fill-ok: #2a0603;
+  --overlay-600: #000000e6;
+  --shadow-nav: 0 -8px 24px rgba(0, 0, 0, 0.9);
+  --shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.9);
+}
+
+[data-theme="print"] {
+  --surface-000: #ffffff;
+  --surface-100: #ffffff;
+  --surface-200: #f4f4f3;
+  --surface-300: #e5e6e5;
+  --border-100: #8a8c8b;
+  --ink-100: #14160f;
+  --ink-200: #3b3f3e;
+  --ink-300: #5c6160;
+  --brand-500: #e46c23;
+  --brand-600: #d05f1c;
+  --brand-400: #8f3d0d;
+  --ink-on-brand: #14160f;
+  --focus-ring: #14160f;
+  --brand-grey: #55595a;
+  --signal-critical: #b3301a;
+  --signal-warn: #7a5a00;
+  --signal-ok: #1f6b3a;
+  --fill-critical: #f9e3e0;
+  --fill-ok: #e2f0e5;
+  --overlay-600: #14160f99;
+  --shadow-nav: 0 -1px 0 0 rgba(20, 22, 15, 0.14);
+  --shadow-sheet: 0 12px 32px rgba(20, 22, 15, 0.18);
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --tap-min: 48px;
+  --tap-lg: 64px;
+  --tap-xl: 96px;
+  --nav-h: 64px;
+  --content-max: 480px;
+  --logo-min: 120px;
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+
+/* Display */
+.screen-title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 32px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  line-height: 26px;
+  font-weight: 600;
+}
+.mode-label {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Text */
+.body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+.body-strong {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+.small {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.caption {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+/* Data */
+.clock-xl {
+  font-family: var(--font-mono);
+  font-size: 46px;
+  line-height: 48px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.clock {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 600;
+}
+.score {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
