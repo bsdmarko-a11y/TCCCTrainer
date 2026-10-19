@@ -1,0 +1,329 @@
+{
+  "guidelineVersion": "TCCC Guidelines (CoTCCC), 25 January 2024",
+  "scenarios": [
+    {
+      "id": "s01",
+      "title": "Desert convoy ambush",
+      "brief": "An IED has hit your patrol and the enemy is still firing from a ridgeline. A conscious soldier 15 metres away is screaming, bright red blood soaking his left trouser leg.",
+      "steps": [
+        {
+          "id": "cover",
+          "label": "Return fire and take cover",
+          "why": "Care Under Fire starts with the threat, because nothing you do for the casualty survives unsuppressed fire."
+        },
+        {
+          "id": "selfaid",
+          "label": "Direct him to apply his own tourniquet",
+          "why": "He is conscious and carrying a kit, so self-aid stops the bleeding without exposing a second person."
+        },
+        {
+          "id": "hastytq",
+          "label": "Apply a hasty tourniquet high and tight",
+          "why": "If he cannot do it himself, a tourniquet over the clothing at the top of the limb stops the bleeding inside a minute."
+        },
+        {
+          "id": "movecover",
+          "label": "Move him to cover behind the vehicle",
+          "why": "Once the bleeding is stopped, getting him out of the beaten zone is the next priority."
+        }
+      ],
+      "distractors": [
+        {
+          "id": "bloodsweep",
+          "label": "Run a full blood sweep where he lies",
+          "why": "A full sweep belongs in Tactical Field Care; under fire it keeps you both exposed for minutes."
+        },
+        {
+          "id": "airway",
+          "label": "Open the airway and check breathing",
+          "why": "He is screaming, so the airway is open, and airway work is deferred until the scene is safer."
+        },
+        {
+          "id": "card",
+          "label": "Fill in the casualty card",
+          "why": "Documentation follows bleeding control and movement to cover, not the other way round."
+        }
+      ]
+    },
+    {
+      "id": "s02",
+      "title": "Industrial plant fire",
+      "brief": "An explosion at a chemical plant has left fire, heavy smoke and the risk of a second blast. A worker lies 10 metres from the flames, unconscious, right arm amputated below the elbow, blood pooling fast.",
+      "steps": [
+        {
+          "id": "threat",
+          "label": "Assess the fire, smoke and blast risk",
+          "why": "The scene is not safe, and a casualty is not worth two casualties."
+        },
+        {
+          "id": "plan",
+          "label": "Plan the route and the drag to cover",
+          "why": "An unconscious casualty cannot help you, so decide how you will move him before you commit."
+        },
+        {
+          "id": "hastytq",
+          "label": "Apply a hasty tourniquet high and tight on the stump",
+          "why": "A traumatic amputation always takes a tourniquet, and the bleeding has to stop inside a minute."
+        },
+        {
+          "id": "drag",
+          "label": "Drag him clear of the flames",
+          "why": "With the bleeding controlled, the remaining threat to his life is the fire itself."
+        },
+        {
+          "id": "handover",
+          "label": "Call for help and hand over what you did",
+          "why": "The responders arriving need the mechanism, the tourniquet and its time before they touch him."
+        }
+      ],
+      "distractors": [
+        {
+          "id": "pack",
+          "label": "Pack the stump with a hemostatic dressing",
+          "why": "Packing is for wounds no tourniquet can reach; on a limb amputation the tourniquet is faster and surer."
+        },
+        {
+          "id": "hypo",
+          "label": "Wrap him against heat loss",
+          "why": "Hypothermia prevention is a Tactical Field Care task, done once he is out of the hazard."
+        },
+        {
+          "id": "recovery",
+          "label": "Roll him into the recovery position where he lies",
+          "why": "Positioning him beside the flames leaves you both in the blast radius; move him first."
+        }
+      ]
+    },
+    {
+      "id": "s03",
+      "title": "Post-contact patrol",
+      "brief": "Contact has ended and your patrol is in a secured alley. A soldier with a hasty tourniquet on his right thigh is now confused, pale and sweating, breathing 24 times a minute, with an armpit wound still bleeding.",
+      "steps": [
+        {
+          "id": "reassess",
+          "label": "Reassess the thigh tourniquet and tighten or add a second",
+          "why": "It went on under fire over the uniform, so confirm it has stopped the bleeding before anything else."
+        },
+        {
+          "id": "packarmpit",
+          "label": "Pack the armpit wound and hold pressure for 3 minutes",
+          "why": "No tourniquet seats in the armpit, so hemostatic packing under firm pressure is the control."
+        },
+        {
+          "id": "airway",
+          "label": "Confirm the airway while he is still talking",
+          "why": "Speech proves the airway is open now, and his falling mental status means you keep checking."
+        },
+        {
+          "id": "chest",
+          "label": "Expose and roll him to check the chest and back",
+          "why": "Breathing at 24 a minute with torso trauma means looking for a penetrating chest wound, front and back."
+        },
+        {
+          "id": "shock",
+          "label": "Check the radial pulse and treat for shock",
+          "why": "Pale, sweaty, confused and breathing fast is hemorrhagic shock until bleeding control proves otherwise."
+        },
+        {
+          "id": "hypo",
+          "label": "Get him off the ground and cover him",
+          "why": "He has lost enough blood to cool fast, whatever the weather is doing."
+        },
+        {
+          "id": "card",
+          "label": "Record the findings and times on the casualty card",
+          "why": "The tourniquet times and your findings are what the next level cannot reconstruct later."
+        }
+      ],
+      "distractors": [
+        {
+          "id": "packchest",
+          "label": "Pack the chest wound with hemostatic gauze",
+          "why": "Chest wounds are sealed, never packed, because gauze cannot reach bleeding inside the chest."
+        },
+        {
+          "id": "removetq",
+          "label": "Loosen the thigh tourniquet to check the bleeding",
+          "why": "Releasing a tourniquet on a casualty already in shock restarts the bleeding you stopped."
+        },
+        {
+          "id": "splint",
+          "label": "Splint the leg below the tourniquet",
+          "why": "Splinting comes after MARCH is complete; it is not what is killing him."
+        }
+      ]
+    },
+    {
+      "id": "s04",
+      "title": "Vehicle rollover",
+      "brief": "A vehicle rolled over on a training exercise, with no enemy and the scene secured by others. A soldier lies unconscious, breathing with loud snoring, no visible bleeding, and the neck may have been hyperextended.",
+      "steps": [
+        {
+          "id": "sweep",
+          "label": "Run a full blood sweep for hidden bleeding",
+          "why": "No visible blood is not the same as no bleeding; the sweep is how you rule it out."
+        },
+        {
+          "id": "jawthrust",
+          "label": "Open the airway with a jaw-thrust",
+          "why": "Snoring is a partial obstruction, and the rollover mechanism rules out tilting the head."
+        },
+        {
+          "id": "breathing",
+          "label": "Look, listen and feel for breathing",
+          "why": "Confirm the opened airway is actually moving air before you move on."
+        },
+        {
+          "id": "pulse",
+          "label": "Check the radial pulse and the skin for shock",
+          "why": "A present, strong radial pulse and warm skin let you call circulation stable for now."
+        },
+        {
+          "id": "hypo",
+          "label": "Insulate her from the ground and cover her",
+          "why": "An unconscious casualty on the ground loses heat steadily and cannot tell you about it."
+        },
+        {
+          "id": "report",
+          "label": "Record the head injury signs and report them",
+          "why": "Mechanism and time unconscious are details only you can give the receiving medics."
+        }
+      ],
+      "distractors": [
+        {
+          "id": "headtilt",
+          "label": "Open the airway with a head-tilt/chin-lift",
+          "why": "The rollover may have injured the neck, so the head stays still and the jaw comes forward instead."
+        },
+        {
+          "id": "fingersweep",
+          "label": "Sweep the mouth with a blind finger",
+          "why": "A blind sweep drives debris deeper; only what you can see comes out."
+        },
+        {
+          "id": "recovery",
+          "label": "Roll her into the recovery position",
+          "why": "A suspected spinal injury stays flat with the jaw held forward rather than being rolled onto her side."
+        }
+      ]
+    },
+    {
+      "id": "s05",
+      "title": "Building collapse",
+      "brief": "An IED has brought down part of a building and the threat is neutralised. A conscious, anxious soldier has a deep groin laceration bleeding heavily and an obviously deformed left forearm.",
+      "steps": [
+        {
+          "id": "pack",
+          "label": "Pack the groin wound with a hemostatic dressing",
+          "why": "No tourniquet reaches the groin, so packing onto the bleeding source is the control."
+        },
+        {
+          "id": "pressure",
+          "label": "Hold firm direct pressure for 3 full minutes",
+          "why": "The dressing only works if the clot is given the full three minutes to form."
+        },
+        {
+          "id": "bandage",
+          "label": "Apply a pressure bandage over the packing",
+          "why": "The bandage holds the packing in place so you can free your hands for the rest of MARCH."
+        },
+        {
+          "id": "chest",
+          "label": "Roll him and check the torso front and back",
+          "why": "A blast casualty gets a chest check even when he is talking comfortably."
+        },
+        {
+          "id": "shock",
+          "label": "Watch the radial pulse and skin for shock",
+          "why": "He has lost a lot of blood from the groin, so shock is the thing you expect next."
+        },
+        {
+          "id": "hypo",
+          "label": "Replace blood-soaked clothing and cover him",
+          "why": "Soaked clothing cools him faster than the bare air would."
+        },
+        {
+          "id": "splint",
+          "label": "Splint the forearm and recheck the fingers",
+          "why": "Splinting follows MARCH, taking in the elbow and the wrist, with circulation checked before and after."
+        }
+      ],
+      "distractors": [
+        {
+          "id": "tq",
+          "label": "Apply a tourniquet to the groin",
+          "why": "No limb tourniquet seats at the groin, and the attempt costs the minutes the packing needs."
+        },
+        {
+          "id": "splintfirst",
+          "label": "Splint the forearm before anything else",
+          "why": "The deformed forearm is obvious but not lethal; the groin bleed is what kills him."
+        },
+        {
+          "id": "lift",
+          "label": "Lift the packing after a minute to look",
+          "why": "Lifting the dressing breaks the clot you are forming, so the three minutes start again."
+        }
+      ]
+    },
+    {
+      "id": "s06",
+      "title": "Training range blast",
+      "brief": "An accidental explosion on a training range, threat secured, bystanders on hand to help. A conscious soldier has blistered burns on both forearms, debris in his right eye and a swollen, deformed right ankle.",
+      "steps": [
+        {
+          "id": "sweep",
+          "label": "Run a blood sweep to rule out massive bleeding",
+          "why": "Visible injuries pull the eye, so the sweep is what proves nothing is bleeding out."
+        },
+        {
+          "id": "airway",
+          "label": "Confirm the airway and let him sit up",
+          "why": "He is talking, so the airway is open, and sitting up is the position he breathes best in."
+        },
+        {
+          "id": "breath",
+          "label": "Check for respiratory distress and chest wounds",
+          "why": "A blast can injure the lungs even where the skin is unmarked."
+        },
+        {
+          "id": "pulse",
+          "label": "Check the radial pulse and watch for shock",
+          "why": "Burns and a fracture both bleed into tissue, so circulation is monitored rather than assumed."
+        },
+        {
+          "id": "hypo",
+          "label": "Cover the burns with dry dressings and insulate him",
+          "why": "Burned skin cannot hold heat, so the burn dressing and hypothermia prevention are one move."
+        },
+        {
+          "id": "eye",
+          "label": "Shield the injured eye and tape the shield in place",
+          "why": "A rigid shield over that eye alone protects the globe without any pressure on it."
+        },
+        {
+          "id": "splint",
+          "label": "Splint the ankle and recheck pulse and sensation",
+          "why": "The splint takes in the knee and the foot, with circulation checked before and after."
+        }
+      ],
+      "distractors": [
+        {
+          "id": "wetdressing",
+          "label": "Lay wet dressings on the burns",
+          "why": "Wet dressings pull heat out of a casualty already at risk of hypothermia."
+        },
+        {
+          "id": "removedebris",
+          "label": "Pick the debris out of the eye",
+          "why": "Removing debris can empty the globe; the eye is shielded and the object left alone."
+        },
+        {
+          "id": "botheyes",
+          "label": "Bandage both eyes together",
+          "why": "Only the injured eye is shielded, because blinding him costs him the ability to help himself."
+        }
+      ]
+    }
+  ]
+}

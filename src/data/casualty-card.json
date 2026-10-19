@@ -1,0 +1,306 @@
+{
+  "guidelineVersion": "TCCC Guidelines (CoTCCC), 25 January 2024; card layout after the TCCC casualty card and MIST-AT report in lesson 1022, Taking a History and Casualty Card (26 June 2017)",
+  "fields": [
+    {
+      "name": "trainingId",
+      "label": "Training ID",
+      "type": "text",
+      "helper": "Training identity only, for example LANE 3 / MANIKIN B. Never a name, a service number or a date of birth."
+    },
+    {
+      "name": "casualtyNumber",
+      "label": "Casualty number",
+      "type": "text",
+      "helper": "Position in the casualty count on the lane, for example 2 of 4."
+    },
+    {
+      "name": "date",
+      "label": "Date",
+      "type": "date"
+    },
+    {
+      "name": "timeOfWounding",
+      "label": "Time of wounding",
+      "type": "time",
+      "helper": "Scenario clock time the injury happened."
+    },
+    {
+      "name": "arrivalTime",
+      "label": "Responder arrival time",
+      "type": "time",
+      "helper": "Scenario clock time you reached the casualty."
+    },
+    {
+      "name": "sex",
+      "label": "Sex",
+      "type": "radio",
+      "options": ["Male", "Female", "Not recorded"],
+      "helper": "From the training scenario, not a real person."
+    },
+    {
+      "name": "age",
+      "label": "Age",
+      "type": "number",
+      "helper": "From the training scenario. Leave empty if the lane does not set one."
+    },
+    {
+      "name": "triageCategory",
+      "label": "Triage category",
+      "type": "select",
+      "options": ["Red", "Yellow", "Green", "Blue", "Black"],
+      "helper": "The card prints five triage colours; use the colour-to-category mapping your course teaches."
+    },
+    {
+      "name": "medevacPriority",
+      "label": "MEDEVAC priority",
+      "type": "radio",
+      "options": ["P1", "P2", "P3"]
+    },
+    {
+      "name": "mechanism",
+      "label": "Mechanism of injury",
+      "type": "checkbox-group",
+      "options": ["GSW", "Blast", "MVA", "Burn", "Fall", "Other"],
+      "helper": "Tick every mechanism that applies. GSW is a gunshot wound, MVA a motor vehicle accident."
+    },
+    {
+      "name": "mechanismOther",
+      "label": "Other mechanism",
+      "type": "text",
+      "helper": "Fill in only when Other is ticked above."
+    },
+    {
+      "name": "injuriesFound",
+      "label": "Injuries found",
+      "type": "checkbox-group",
+      "options": [
+        "Amputation",
+        "Burn",
+        "Blunt trauma",
+        "Crush injury",
+        "Deformity",
+        "Eye injury",
+        "Fracture",
+        "Head injury",
+        "Open wound"
+      ]
+    },
+    {
+      "name": "injurySites",
+      "label": "Injury sites",
+      "type": "textarea",
+      "helper": "Name the limb and the side for each injury. The paper card marks these on a body diagram."
+    },
+    {
+      "name": "burnTbsa",
+      "label": "Burned body surface (%)",
+      "type": "number",
+      "helper": "Estimate to the nearest 10 percent with the Rule of Nines."
+    },
+    {
+      "name": "avpu",
+      "label": "Level of consciousness (AVPU)",
+      "type": "radio",
+      "options": [
+        "A - alert",
+        "V - responds to voice",
+        "P - responds to pain",
+        "U - unresponsive"
+      ],
+      "helper": "First estimate, recorded before any analgesia."
+    },
+    {
+      "name": "avpuTime",
+      "label": "Time of the AVPU check",
+      "type": "time"
+    },
+    {
+      "name": "gcsScore",
+      "label": "GCS score",
+      "type": "number",
+      "helper": "Glasgow Coma Scale total, 3 to 15, if your course records one."
+    },
+    {
+      "name": "gcsTime",
+      "label": "Time of the GCS score",
+      "type": "time"
+    },
+    {
+      "name": "pupilsEqualReactive",
+      "label": "Pupils equal and reactive",
+      "type": "checkbox",
+      "helper": "Untick and describe in the notes when the pupils differ or do not react."
+    },
+    {
+      "name": "signsSymptoms",
+      "label": "S - signs and symptoms",
+      "type": "textarea",
+      "helper": "What the casualty shows and reports."
+    },
+    {
+      "name": "allergies",
+      "label": "A - allergies",
+      "type": "textarea"
+    },
+    {
+      "name": "medications",
+      "label": "M - medications",
+      "type": "textarea",
+      "helper": "What the casualty already takes."
+    },
+    {
+      "name": "pastHistory",
+      "label": "P - past medical history",
+      "type": "textarea",
+      "helper": "Earlier injuries, surgery and illnesses."
+    },
+    {
+      "name": "lastMeal",
+      "label": "L - last meal, in and out",
+      "type": "textarea"
+    },
+    {
+      "name": "events",
+      "label": "E - events leading to the injury",
+      "type": "textarea"
+    },
+    {
+      "name": "bloodType",
+      "label": "Blood type",
+      "type": "text"
+    },
+    {
+      "name": "vitals",
+      "label": "Vital signs",
+      "type": "repeating-group",
+      "helper": "One row per set of observations. The paper card has room for three.",
+      "fields": [
+        { "name": "time", "label": "Time", "type": "time" },
+        { "name": "temperature", "label": "T", "type": "text", "helper": "Temperature." },
+        { "name": "pulse", "label": "P", "type": "number", "helper": "Pulse per minute." },
+        { "name": "respiratoryRate", "label": "R", "type": "number", "helper": "Breaths per minute." },
+        { "name": "bloodPressure", "label": "BP", "type": "text", "helper": "For example 110/70." },
+        { "name": "capillaryRefill", "label": "CRT", "type": "text", "helper": "Capillary refill time in seconds." },
+        { "name": "spo2", "label": "SpO2 (%)", "type": "number", "helper": "Oxygen saturation by pulse oximetry." }
+      ]
+    },
+    {
+      "name": "massiveBleedingTreatment",
+      "label": "Massive bleeding treatment",
+      "type": "checkbox-group",
+      "options": ["Tourniquet", "Pressure bandage", "Hemostatic dressing"]
+    },
+    {
+      "name": "tourniquets",
+      "label": "Tourniquets applied",
+      "type": "repeating-group",
+      "helper": "One row per tourniquet. The same time goes in marker on the strap itself.",
+      "fields": [
+        {
+          "name": "site",
+          "label": "Site",
+          "type": "select",
+          "options": ["Right arm", "Left arm", "Right leg", "Left leg"]
+        },
+        { "name": "timeApplied", "label": "Time applied", "type": "time" },
+        { "name": "timeReapplied", "label": "Time reapplied", "type": "time", "helper": "When a hasty tourniquet was converted onto bare skin." },
+        { "name": "timeRemoved", "label": "Time converted or removed", "type": "time" },
+        { "name": "note", "label": "Note", "type": "text" }
+      ]
+    },
+    {
+      "name": "airwayTreatment",
+      "label": "Airway",
+      "type": "checkbox-group",
+      "options": [
+        "Intact",
+        "NPA (nasopharyngeal airway)",
+        "King LT (supraglottic airway)",
+        "Cricothyroidotomy"
+      ]
+    },
+    {
+      "name": "respirationTreatment",
+      "label": "Respiration",
+      "type": "checkbox-group",
+      "options": ["Chest seal", "Needle decompression"]
+    },
+    {
+      "name": "vascularAccess",
+      "label": "IV or IO access",
+      "type": "text",
+      "helper": "Site and gauge, for example 18 G left antecubital."
+    },
+    {
+      "name": "fluids",
+      "label": "Fluids given",
+      "type": "textarea",
+      "helper": "Type, volume and time, for example LR 500 ml at 14:40."
+    },
+    {
+      "name": "hypothermiaPrevention",
+      "label": "Hypothermia prevention applied",
+      "type": "checkbox"
+    },
+    {
+      "name": "headInjurySuspected",
+      "label": "Head injury suspected",
+      "type": "radio",
+      "options": ["Yes", "No"]
+    },
+    {
+      "name": "drugs",
+      "label": "Drugs given",
+      "type": "repeating-group",
+      "helper": "One row per drug. The paper card groups them as TXA, antibiotic, pain meds and others.",
+      "fields": [
+        {
+          "name": "category",
+          "label": "Category",
+          "type": "select",
+          "options": ["TXA", "Antibiotic", "Pain", "Other"]
+        },
+        { "name": "drug", "label": "Drug", "type": "text" },
+        { "name": "time", "label": "Time", "type": "time" },
+        { "name": "dose", "label": "Dose", "type": "text" },
+        {
+          "name": "route",
+          "label": "Route",
+          "type": "select",
+          "options": ["PO", "IV", "IO", "IM", "IN", "Other"],
+          "helper": "PO by mouth, IV intravenous, IO intraosseous, IM intramuscular, IN intranasal."
+        },
+        {
+          "name": "effect",
+          "label": "Effect",
+          "type": "radio",
+          "options": ["Improved", "No improvement"]
+        }
+      ]
+    },
+    {
+      "name": "evacuationMeans",
+      "label": "Evacuation means",
+      "type": "radio",
+      "options": ["Ground", "Air"]
+    },
+    {
+      "name": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "helper": "Anything the boxes above do not hold, including changes in the casualty's status."
+    },
+    {
+      "name": "responder",
+      "label": "Responder call sign",
+      "type": "text",
+      "helper": "Call sign or student number. No real names on a training card."
+    },
+    {
+      "name": "lane",
+      "label": "Lane or location",
+      "type": "text",
+      "helper": "Where the training serial ran."
+    }
+  ]
+}

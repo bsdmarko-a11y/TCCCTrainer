@@ -1,0 +1,191 @@
+{
+  "guidelineVersion": "TCCC Guidelines (CoTCCC), 25 January 2024",
+  "steps": [
+    {
+      "id": "m",
+      "letter": "M",
+      "phase": "MARCH",
+      "title": "Massive bleeding",
+      "actions": [
+        "Sweep for bleeding with both hands: neck, each arm from the armpit down, then each leg from the groin down.",
+        "Apply a TQ (tourniquet) high and tight over the clothing while you are still under fire.",
+        "Apply a deliberate TQ directly to the skin 2-3 inches above the wound once you reach Tactical Field Care.",
+        "Twist the windlass until the bleeding stops and the pulse beyond the TQ is gone, then lock it in the clip.",
+        "Apply a second TQ side by side with the first if one properly applied TQ does not stop the bleeding.",
+        "Pack a groin, armpit or neck wound with a hemostatic dressing and hold firm pressure for 3 minutes."
+      ],
+      "mistakes": [
+        "Self-adhering strap left slack, so the windlass cannot close the artery. Pull out all the slack before twisting.",
+        "Tourniquet laid over a joint or a cargo pocket, so the strap slips. Clear the limb and place it on flat skin above the wound.",
+        "Windlass left unsecured, so it unwinds when the casualty is moved. Lock it in the clip and fold the safety strap over it.",
+        "Chest wound packed with hemostatic gauze, which cannot reach bleeding inside the chest. Seal it instead."
+      ],
+      "note": "Care under fire: bleeding control only, stopped within 1 minute."
+    },
+    {
+      "id": "a",
+      "letter": "A",
+      "phase": "MARCH",
+      "title": "Airway",
+      "actions": [
+        "Open the mouth and remove any object you can see.",
+        "Use a head-tilt/chin-lift when nothing suggests a neck or spine injury.",
+        "Use a jaw-thrust instead when the mechanism points to a neck or spine injury.",
+        "Let a conscious casualty sit up or lean forward in whatever position keeps the airway clear.",
+        "Roll an unconscious casualty into the recovery position.",
+        "Reassess: look for chest rise, listen for moving air, feel it on your cheek."
+      ],
+      "mistakes": [
+        "Blind finger sweep, which drives debris deeper and tears tissue. Remove only what you can see.",
+        "Head-tilt used after a rollover or blast, which moves a possibly broken neck. Use a jaw-thrust.",
+        "Snoring treated as sleep, so a partial obstruction is left in place. Open the airway and check again.",
+        "Recovery position used on a suspected spinal injury. Leave the casualty flat and hold the jaw forward."
+      ],
+      "note": "Airway work is deferred under fire; it belongs in Tactical Field Care."
+    },
+    {
+      "id": "r",
+      "letter": "R",
+      "phase": "MARCH",
+      "title": "Respiration",
+      "actions": [
+        "Expose the chest and sweep it with both hands for entry and exit wounds.",
+        "Roll the casualty and sweep the back before you call the torso clear.",
+        "Seal every open or sucking chest wound with a vented chest seal.",
+        "Count the breathing rate: over 20 a minute, or under 6, is respiratory distress.",
+        "Watch a sealed chest for worsening distress, which points to a tension pneumothorax.",
+        "Report any severe chest injury to medical personnel at once."
+      ],
+      "mistakes": [
+        "Chest wound packed with gauze, which does nothing for bleeding inside the chest. Apply a seal.",
+        "Only the front checked, so an exit wound in the back keeps bleeding. Roll and sweep the back.",
+        "Seal applied and then forgotten, so pressure builds unseen. Reassess breathing after you seal.",
+        "Breathing judged by effort alone, so a rate of 24 a minute is missed. Count it."
+      ],
+      "note": "Burp or remove the seal if distress worsens after it is applied."
+    },
+    {
+      "id": "c",
+      "letter": "C",
+      "phase": "MARCH",
+      "title": "Circulation",
+      "actions": [
+        "Reassess every tourniquet and dressing already applied: expose the site and confirm the bleeding is stopped.",
+        "Replace a hasty tourniquet placed over the uniform with one on bare skin 2-3 inches above the wound.",
+        "Mark the application time on the tourniquet strap and on the casualty card.",
+        "Check the radial pulse and the skin: a weak or absent pulse with pale, cool, clammy skin means shock.",
+        "Treat altered mental status with no head injury as hemorrhagic shock.",
+        "Apply a pelvic binder after severe blunt or blast injury with pelvic pain, shock or a major leg amputation."
+      ],
+      "mistakes": [
+        "Tourniquet time never written down, so the next level cannot judge the limb. Mark the strap and the card.",
+        "Hasty tourniquet left over the uniform, so it loosens as the fabric compresses. Convert it onto skin.",
+        "Shock called late because the radial pulse was never felt. Check it at every reassessment.",
+        "Tourniquet loosened to look at the wound, which restarts the bleeding. Expose the site without releasing it."
+      ],
+      "note": "Convert a tourniquet within 2 hours where bleeding can be held another way; do not remove one in place over 6 hours."
+    },
+    {
+      "id": "h",
+      "letter": "H",
+      "phase": "MARCH",
+      "title": "Hypothermia",
+      "actions": [
+        "Get the casualty off the cold ground onto insulating material.",
+        "Replace wet clothing with dry clothing and keep the rest of the uniform on.",
+        "Place an active warming blanket on the front of the chest and under the arms, never straight onto skin.",
+        "Enclose the casualty in an impermeable outer shell, then upgrade to an insulated system when you can.",
+        "Warm IV (intravenous) and IO (intraosseous) fluids before you run them in.",
+        "Shield the casualty from wind and rain on the evacuation platform."
+      ],
+      "mistakes": [
+        "Casualty left on bare ground, which pulls heat out faster than the air does. Insulate underneath first.",
+        "Heat source laid directly on skin, which burns a casualty who cannot feel it. Keep a layer in between.",
+        "Hypothermia treated as a cold-weather problem, so a bleeding casualty on a warm day is left uncovered. Cover every major bleeder.",
+        "Uniform stripped off to search for wounds and never replaced. Expose, check, then cover again."
+      ],
+      "note": "Blood loss drives this cooling; it happens on warm days too."
+    },
+    {
+      "id": "p",
+      "letter": "P",
+      "phase": "PAWS",
+      "title": "Pain",
+      "actions": [
+        "Record a mental status check using AVPU (alert, verbal, pain, unresponsive) before you give any analgesia.",
+        "Give the CWMP (Combat Wound Medication Pack) for mild to moderate pain in a casualty still able to fight: acetaminophen 500 mg, two tablets every 8 hours, and meloxicam 15 mg once a day.",
+        "Give oral transmucosal fentanyl citrate 800 mcg for moderate pain when the casualty is not in shock or respiratory distress.",
+        "Give ketamine 20-30 mg by slow IV (intravenous) or IO (intraosseous) push when the casualty is in shock or respiratory distress.",
+        "Disarm any casualty who has been given fentanyl, ketamine or midazolam.",
+        "Keep naloxone 0.4 mg to hand whenever you use an opioid."
+      ],
+      "mistakes": [
+        "Opioid given to a casualty in shock, which drops the blood pressure further. Use ketamine instead.",
+        "Weapon left on a casualty after analgesia, so a dissociated casualty is still armed. Disarm first.",
+        "Mental status never recorded before the drug, so later confusion cannot be read. Document AVPU first.",
+        "OTFC lozenge chewed, which dumps the dose at once. Tape it to a finger and keep it between cheek and gum."
+      ],
+      "note": "Benzodiazepines are not analgesia and are not given alongside opioids."
+    },
+    {
+      "id": "ab",
+      "letter": "A",
+      "phase": "PAWS",
+      "title": "Antibiotics",
+      "actions": [
+        "Give antibiotics to every casualty with an open combat wound.",
+        "Give moxifloxacin 400 mg by mouth once a day when the casualty can swallow.",
+        "Give ertapenem 1 g by IV (intravenous), IO (intraosseous) or IM (intramuscular) route once a day when the casualty cannot take tablets.",
+        "Record the drug, dose, route and time on the casualty card."
+      ],
+      "mistakes": [
+        "Antibiotic withheld because the wound looks clean, so a contaminated track goes untreated. Treat every open wound.",
+        "Tablets pushed on a shocked or unconscious casualty who cannot protect the airway. Use the injectable route.",
+        "Antibiotics given for burns alone, which is not an indication. Reserve them for penetrating wounds.",
+        "Dose given but never written down, so the next level repeats it or skips it. Record it on the card."
+      ],
+      "note": "Moxifloxacin is the tablet in the Combat Wound Medication Pack the casualty carries."
+    },
+    {
+      "id": "w",
+      "letter": "W",
+      "phase": "PAWS",
+      "title": "Wounds",
+      "actions": [
+        "Inspect and dress every known wound, then search the casualty again for wounds you have not found.",
+        "Cover a penetrating eye injury with a rigid eye shield over that eye only, and tape it in place.",
+        "Cover burns with dry sterile dressings and estimate the burned area to the nearest 10 percent.",
+        "Cover exposed bowel with a moist sterile dressing or a water-impermeable covering.",
+        "Leave an impaled object in place and bandage around it.",
+        "Record each wound and each dressing on the casualty card."
+      ],
+      "mistakes": [
+        "Pressure patch put over an injured eye, which presses on the globe. Use a rigid shield and no pressure.",
+        "Both eyes covered for a one-sided injury, which blinds a casualty who could still move. Shield the injured eye only.",
+        "Wet dressing laid on a burn, which strips heat and drives hypothermia. Use dry sterile dressings.",
+        "Search stopped at the first wound found, so a second one keeps bleeding. Check the whole casualty."
+      ],
+      "note": "Treat a burned casualty as a trauma casualty with burns, not a burn casualty with injuries."
+    },
+    {
+      "id": "s",
+      "letter": "S",
+      "phase": "PAWS",
+      "title": "Splinting",
+      "actions": [
+        "Check the pulse, movement and sensation beyond the injury before you splint.",
+        "Splint the limb as you found it, taking in the joint above and the joint below the fracture.",
+        "Secure the splint with an elastic wrap, cravats, belts or tape.",
+        "Check the pulse, movement and sensation again once the splint is on.",
+        "Splint before you move the casualty."
+      ],
+      "mistakes": [
+        "Splint tied across the fracture alone, so the limb still hinges. Take in the joint above and below.",
+        "Wrap pulled too tight, so fingers or toes turn cool, blue or numb. Loosen it and re-secure.",
+        "Circulation checked once only, so a splint that cut off the pulse goes unnoticed. Check before and after.",
+        "Casualty moved first and splinted later, which drives broken ends through tissue. Splint first."
+      ],
+      "note": "An injured arm can be secured to the shirt, using the sleeve as a sling."
+    }
+  ]
+}
