@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BrowserRouter,
   Link,
@@ -19,6 +19,7 @@ import march from "./data/march.json";
 import questions from "./data/questions.json";
 import scenarios from "./data/scenarios.json";
 import useSwipe, { useArrowKeys } from "./hooks/useSwipe.js";
+import { primeAudio, soundAlert } from "./lib/alerts.js";
 import { RouteNames, STORAGE_KEYS, THEMES } from "./lib/constants.js";
 import stil from "./App.module.css";
 
@@ -789,46 +790,91 @@ function ScenarioRunScreen() {
   );
 }
 
+const TQ_SITES = [
+  "Left arm",
+  "Right arm",
+  "Left leg",
+  "Right leg",
+  "Junctional / other",
+];
+
+// Prag je u sekundama: vjezba primjene poveza ima rok od jedne minute,
+// kako stoji i na kartici M ("stopped within 1 minute").
+const TQ_DEFAULTS = { tqAlertSeconds: 60 };
+
+// Sat se racuna iz spremljenog trenutka primjene, ne iz brojanja otkucaja:
+// zaslon zaspi, kartica se uspori u pozadini, stranica se ponovno ucita -
+// proteklo vrijeme svejedno ostaje tocno.
+function tqElapsed(tq, now) {
+  return Math.max(0, Math.floor((now - tq.startedAt) / 1000));
+}
+
+function wallClock(epoch) {
+  return new Intl.DateTimeFormat([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(epoch));
+}
+
+// Spremljeni oblik se mijenjao: prvo {startedAt, elapsedMs}, zatim popis
+// poveza, sada jedan povez. Sve troje se cita, nista se ne rusi.
+function readTourniquet(stored) {
+  const candidate = Array.isArray(stored) ? stored[0] : stored;
+  if (!candidate || !Number.isFinite(candidate.startedAt)) return null;
+  return {
+    startedAt: candidate.startedAt,
+    limb: candidate.limb ?? "",
+    note: candidate.note ?? "",
+  };
+}
+
 function TourniquetTimerScreen() {
-  const [timer, setTimer, storageError] = useStoredState(STORAGE_KEYS.TQ, {
-    startedAt: null,
-    elapsedMs: 0,
-  });
-  const [now, setNow] = useState(() => Date.now());
-  const running = Number.isFinite(timer.startedAt) && timer.startedAt !== null;
-
-  useEffect(() => {
-    if (!running) return undefined;
-    const interval = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(interval);
-  }, [running]);
-
-  const elapsed = Math.max(
-    0,
-    (Number(timer.elapsedMs) || 0) + (running ? now - timer.startedAt : 0),
+  const [stored, setStored, storageError] = useStoredState(
+    STORAGE_KEYS.TQ,
+    null,
+  );
+  const [savedSettings] = useStoredState(STORAGE_KEYS.SETTINGS, TQ_DEFAULTS);
+  const tourniquet = useMemo(() => readTourniquet(stored), [stored]);
+  const settings = useMemo(
+    () => ({ ...TQ_DEFAULTS, ...savedSettings }),
+    [savedSettings],
   );
 
-  function start() {
+  const [site, setSite] = useState(TQ_SITES[0]);
+  const [note, setNote] = useState("");
+  const [now, setNow] = useState(() => Date.now());
+  const announced = useRef(false);
+
+  useEffect(() => {
+    if (!tourniquet) return undefined;
+    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [tourniquet]);
+
+  const elapsed = tourniquet ? tqElapsed(tourniquet, now) : 0;
+  const overdue = Boolean(tourniquet) && elapsed >= settings.tqAlertSeconds;
+
+  // Oglasi se jednom po primjeni, ne svake sekunde.
+  useEffect(() => {
+    if (!overdue) return;
+    if (announced.current) return;
+    announced.current = true;
+    soundAlert();
+  }, [overdue]);
+
+  function applyTourniquet(event) {
+    event.preventDefault();
+    primeAudio(); // zvuk se smije stvoriti samo na dodir korisnika
+    announced.current = false;
     setNow(Date.now());
-    setTimer((current) => ({
-      ...current,
-      startedAt: Date.now(),
-    }));
+    setStored({ startedAt: Date.now(), limb: site, note: note.trim() });
+    setNote("");
   }
 
-  function pause() {
-    const stoppedAt = Date.now();
-    setTimer((current) => ({
-      elapsedMs:
-        (Number(current.elapsedMs) || 0) + stoppedAt - current.startedAt,
-      startedAt: null,
-    }));
-    setNow(stoppedAt);
-  }
-
-  function reset() {
-    setTimer({ startedAt: null, elapsedMs: 0 });
-    setNow(Date.now());
+  function removeTourniquet() {
+    announced.current = false;
+    setStored(null);
   }
 
   return (
@@ -836,52 +882,77 @@ function TourniquetTimerScreen() {
       <ScreenHeader
         eyebrow="Training timer"
         title="Tourniquet clock"
-        description="Elapsed time for a training device. This timer does not provide medical alerts."
+        description={`One tourniquet. The clock records when it went on and prompts at ${settings.tqAlertSeconds} seconds.`}
       />
       {storageError && <StorageWarning message={storageError} />}
-      <Panel className={stil.timerPanel} title="Elapsed time">
-        <p aria-live="off" className={stil.timerDigits}>
-          {formatDuration(elapsed)}
-        </p>
-        <p className="small">
-          {running ? "Timer running" : elapsed > 0 ? "Timer paused" : "Ready"}
-        </p>
-        <div className={stil.buttonRow}>
-          {running ? (
-            <button className={stil.button} onClick={pause} type="button">
-              Pause
+
+      {tourniquet ? (
+        <Panel title={tourniquet.limb || "Tourniquet"}>
+          <Timer
+            at={wallClock(tourniquet.startedAt)}
+            label="Applied"
+            note={
+              overdue
+                ? `Past ${settings.tqAlertSeconds} seconds. Bleeding should be stopped and the time recorded.`
+                : `Prompt at ${settings.tqAlertSeconds} seconds.`
+            }
+            seconds={elapsed}
+            state={overdue ? "alert" : "running"}
+          />
+          {tourniquet.note && <p className="small">{tourniquet.note}</p>}
+          <div className={stil.buttonRow}>
+            <button
+              className={stil.criticalButton}
+              onClick={removeTourniquet}
+              type="button"
+            >
+              Remove TQ
             </button>
-          ) : (
-            <button className={stil.button} onClick={start} type="button">
-              {elapsed > 0 ? "Resume" : "Start"}
+          </div>
+        </Panel>
+      ) : (
+        <Panel title="Apply a tourniquet">
+          <form className={stil.tqForm} onSubmit={applyTourniquet}>
+            <label className={stil.field}>
+              <span className={`caption ${stil.fieldLabel}`}>Site</span>
+              <select
+                className={stil.input}
+                onChange={(event) => setSite(event.target.value)}
+                value={site}
+              >
+                {TQ_SITES.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={stil.field}>
+              <span className={`caption ${stil.fieldLabel}`}>
+                Note (optional)
+              </span>
+              <input
+                className={stil.input}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder="CAT, high and tight"
+                type="text"
+                value={note}
+              />
+            </label>
+            <button className={stil.startButton} type="submit">
+              Start TQ
+              <span className={stil.startHint}>Records the time now</span>
             </button>
-          )}
-          <button
-            className={stil.secondaryButton}
-            disabled={elapsed === 0}
-            onClick={reset}
-            type="button"
-          >
-            Reset
-          </button>
-        </div>
-      </Panel>
+          </form>
+        </Panel>
+      )}
+
       <p className={stil.safetyNotice}>
-        Use only for training. Follow your course instructions and use a
-        separate, approved timing method for real-world care.
+        Training aid only. The prompt above is a drill cue, not medical advice;
+        follow your course protocol and use an approved method for real care.
       </p>
     </div>
   );
-}
-
-function formatDuration(milliseconds) {
-  const seconds = Math.floor(milliseconds / 1000);
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainder = seconds % 60;
-  return [hours, minutes, remainder]
-    .map((part) => String(part).padStart(2, "0"))
-    .join(":");
 }
 
 function makeEmptyCard() {
