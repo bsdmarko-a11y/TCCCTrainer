@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   BrowserRouter,
   Link,
@@ -18,6 +18,7 @@ import casualtyCard from "./data/casualty-card.json";
 import march from "./data/march.json";
 import questions from "./data/questions.json";
 import scenarios from "./data/scenarios.json";
+import useSwipe, { useArrowKeys } from "./hooks/useSwipe.js";
 import { RouteNames, STORAGE_KEYS, THEMES } from "./lib/constants.js";
 import stil from "./App.module.css";
 
@@ -245,7 +246,15 @@ function MarchScreen() {
               key={item.id}
               to={RouteNames.MARCH_STEP.replace(":stepId", item.id)}
             >
-              <span className={stil.stepBadge}>{item.letter}</span>
+              <span
+                className={
+                  item.id === "m"
+                    ? `${stil.stepBadge} ${stil.stepBadgeCritical}`
+                    : stil.stepBadge
+                }
+              >
+                {item.letter}
+              </span>
               <span className={stil.stepText}>
                 <strong>{item.title}</strong>
                 <span className="small">{item.note}</span>
@@ -258,16 +267,43 @@ function MarchScreen() {
     );
   }
 
-  const previous = march.steps[stepIndex - 1];
-  const next = march.steps[stepIndex + 1];
+  return <MarchStep index={stepIndex} key={step.id} step={step} />;
+}
+
+function MarchStep({ step, index }) {
+  const navigate = useNavigate();
+  const kartica = useRef(null);
+  const previous = march.steps[index - 1];
+  const next = march.steps[index + 1];
+
+  const naKorak = useCallback(
+    (cilj) => {
+      if (cilj) navigate(RouteNames.MARCH_STEP.replace(":stepId", cilj.id));
+    },
+    [navigate],
+  );
+
+  const naLijevo = useCallback(() => naKorak(next), [naKorak, next]);
+  const naDesno = useCallback(() => naKorak(previous), [naKorak, previous]);
+
+  useSwipe(kartica, { onLeft: naLijevo, onRight: naDesno });
+  useArrowKeys({ onLeft: naDesno, onRight: naLijevo });
 
   return (
-    <div className={stil.screen}>
+    <div className={stil.screen} ref={kartica}>
       <ScreenHeader
-        eyebrow={`${step.phase} • Step ${stepIndex + 1} of ${march.steps.length}`}
+        eyebrow={`${step.phase} • Step ${index + 1} of ${march.steps.length}`}
         title={`${step.letter} — ${step.title}`}
         description={step.note}
       />
+      <ol aria-hidden="true" className={stil.stepDots}>
+        {march.steps.map((item, dot) => (
+          <li
+            className={dot === index ? stil.dotActive : stil.dot}
+            key={item.id}
+          />
+        ))}
+      </ol>
       <Panel title="Actions">
         <ol className={stil.contentList}>
           {step.actions.map((action, index) => (
@@ -301,15 +337,22 @@ function MarchScreen() {
             All topics
           </Link>
         )}
-        {next && (
+        {next ? (
           <Link
             className={stil.button}
             to={RouteNames.MARCH_STEP.replace(":stepId", next.id)}
           >
             Next topic
           </Link>
+        ) : (
+          <Link className={stil.button} to={RouteNames.MARCH}>
+            Back to all topics
+          </Link>
         )}
       </div>
+      <p className={`caption ${stil.swipeHint}`}>
+        Swipe or use the arrow keys to move between topics.
+      </p>
     </div>
   );
 }

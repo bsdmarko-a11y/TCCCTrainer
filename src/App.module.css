@@ -656,3 +656,38 @@
   align-items: center;
   color: var(--brand-400);
 }
+
+/* Samo kartica M smije nositi kriticnu boju, i to samo na znacki. */
+.stepBadgeCritical {
+  background: var(--signal-critical);
+  color: var(--ink-on-brand);
+}
+
+/* Tockice polozaja. Nisu kontrola - skakanje na korak ide preko popisa,
+   jer devet meta od 48px ne stane na zaslon od 360px. */
+.stepDots {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dot,
+.dotActive {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-300);
+  border: 1px solid var(--border-100);
+}
+
+.dotActive {
+  width: 24px;
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+}
+
+.swipeHint {
+  color: var(--ink-300);
+}
