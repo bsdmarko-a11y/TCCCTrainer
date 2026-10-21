@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   BrowserRouter,
   Link,
-  NavLink,
   Navigate,
   Route,
   Routes,
@@ -11,11 +10,13 @@ import {
   useParams,
 } from "react-router-dom";
 
+import BottomNav from "./components/BottomNav/BottomNav.jsx";
+import ScreenHeader from "./components/ScreenHeader/ScreenHeader.jsx";
 import casualtyCard from "./data/casualty-card.json";
 import march from "./data/march.json";
 import questions from "./data/questions.json";
 import scenarios from "./data/scenarios.json";
-import { NAV_ITEMS, RouteNames, STORAGE_KEYS, THEMES } from "./lib/constants.js";
+import { RouteNames, STORAGE_KEYS, THEMES } from "./lib/constants.js";
 import stil from "./App.module.css";
 
 const STORAGE_ERROR = "Saved data could not be accessed. Your changes may not persist in this browser.";
@@ -73,7 +74,8 @@ function AppShell() {
   const activeTheme = Object.values(THEMES).includes(theme)
     ? theme
     : THEMES.DARK;
-  const isCardRoute = location.pathname.startsWith(RouteNames.CARD);
+  // Traka se skriva samo na ispisu kartice, nigdje drugdje.
+  const isPrintRoute = location.pathname.endsWith("/ispis");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", activeTheme);
@@ -99,7 +101,7 @@ function AppShell() {
         </label>
       </header>
 
-      <main className={stil.main}>
+      <main className={isPrintRoute ? `${stil.main} ${stil.mainIspis}` : stil.main}>
         {themeError && <StorageWarning message={themeError} />}
         <Routes>
           <Route path={RouteNames.HOME} element={<HomeScreen />} />
@@ -128,92 +130,8 @@ function AppShell() {
         </Routes>
       </main>
 
-      <nav className={stil.bottomNav} aria-label="Main navigation">
-        {NAV_ITEMS.map((item) => {
-          const active =
-            item.to === RouteNames.CARD
-              ? isCardRoute
-              : undefined;
-          return (
-            <NavLink
-              className={({ isActive }) =>
-                `${stil.navItem} ${active ?? isActive ? stil.navActive : ""}`
-              }
-              end={item.to === RouteNames.HOME}
-              key={item.to}
-              to={item.to}
-            >
-              <NavIcon name={item.icon} />
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
+      {!isPrintRoute && <BottomNav />}
     </div>
-  );
-}
-
-function NavIcon({ name }) {
-  const paths = {
-    home: (
-      <>
-        <path d="m3 10 9-7 9 7" />
-        <path d="M5 9v11h14V9M9 20v-7h6v7" />
-      </>
-    ),
-    guide: (
-      <>
-        <path d="M4 5h16M4 12h16M4 19h16" />
-        <path d="M8 5h.01M8 12h.01M8 19h.01" />
-      </>
-    ),
-    quiz: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.2 1.1-1.8 1.4-1.8 3" />
-        <path d="M12 17h.01" />
-      </>
-    ),
-    timer: (
-      <>
-        <circle cx="12" cy="13" r="8" />
-        <path d="M12 9v4l2.5 1.5M9 2h6M12 2v3" />
-      </>
-    ),
-    card: (
-      <>
-        <rect x="3" y="4" width="18" height="16" rx="2" />
-        <path d="M7 9h10M7 13h6M7 17h4" />
-      </>
-    ),
-  };
-
-  return (
-    <svg
-      aria-hidden="true"
-      className={stil.navIcon}
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.8"
-      viewBox="0 0 24 24"
-    >
-      {paths[name]}
-    </svg>
-  );
-}
-
-function PageHeading({ eyebrow, title, description, children }) {
-  return (
-    <header className={stil.pageHeading}>
-      {eyebrow && <p className={`caption ${stil.eyebrow}`}>{eyebrow}</p>}
-      <div className={stil.headingRow}>
-        <h1 className="screen-title">{title}</h1>
-        {children}
-      </div>
-      {description && <p className="small">{description}</p>}
-    </header>
   );
 }
 
@@ -237,7 +155,7 @@ function StorageWarning({ message }) {
 function HomeScreen() {
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training only"
         title="TCCC Trainer"
         description="Practice the sequence, review your knowledge, and keep training records for the lane."
@@ -313,7 +231,7 @@ function MarchScreen() {
   if (!step) {
     return (
       <div className={stil.screen}>
-        <PageHeading
+        <ScreenHeader
           eyebrow="Field guide"
           title="MARCH-PAWS"
           description={`Reference: ${march.guidelineVersion}`}
@@ -343,7 +261,7 @@ function MarchScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow={`${step.phase} • Step ${stepIndex + 1} of ${march.steps.length}`}
         title={`${step.letter} — ${step.title}`}
         description={step.note}
@@ -464,7 +382,7 @@ function QuizScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow={`Question ${index + 1} of ${questions.questions.length}`}
         title="Knowledge quiz"
         description={`${remaining} seconds remaining`}
@@ -543,7 +461,7 @@ function QuizReviewScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Quiz"
         title="Practice history"
         description="Quiz scores are stored only in this browser."
@@ -580,7 +498,7 @@ function QuizReviewScreen() {
 function ScenarioListScreen() {
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Decision practice"
         title="Scenarios"
         description="Choose the next appropriate action. Incorrect choices explain why they do not fit the situation."
@@ -680,7 +598,7 @@ function ScenarioRunScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow={`Scenario • Step ${stepIndex + 1} of ${scenario.steps.length}`}
         title={scenario.title}
       />
@@ -786,7 +704,7 @@ function TourniquetTimerScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training timer"
         title="Tourniquet clock"
         description="Elapsed time for a training device. This timer does not provide medical alerts."
@@ -865,7 +783,7 @@ function CardListScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training records"
         title="Casualty cards"
         description="Cards are stored locally in this browser. Enter training data only—never real patient details."
@@ -873,7 +791,7 @@ function CardListScreen() {
         <Link className={stil.button} to={RouteNames.CARD_NEW}>
           New card
         </Link>
-      </PageHeading>
+      </ScreenHeader>
       {storageError && <StorageWarning message={storageError} />}
       {cards.length === 0 ? (
         <Panel title="No saved cards">
@@ -951,7 +869,7 @@ function CardEditorScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training record"
         title={existing ? "Edit casualty card" : "New casualty card"}
         description="Use training identifiers only. Do not enter real names, service numbers, or patient data."
@@ -964,7 +882,7 @@ function CardEditorScreen() {
             Print
           </Link>
         )}
-      </PageHeading>
+      </ScreenHeader>
       {storageError && <StorageWarning message={storageError} />}
       <form className={stil.cardForm} onSubmit={saveCard}>
         {casualtyCard.fields.map((field) => (
@@ -1160,7 +1078,7 @@ function CardPrintScreen() {
   return (
     <div className={`${stil.screen} ${stil.printScreen}`}>
       {storageError && <StorageWarning message={storageError} />}
-      <PageHeading eyebrow="Training record" title="Casualty card" />
+      <ScreenHeader eyebrow="Training record" title="Casualty card" />
       {card && (
         <>
           <div className={stil.printGrid}>
@@ -1242,7 +1160,7 @@ function ProgressScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Local to this browser"
         title="Progress"
         description="Practice history is saved on this device only."
@@ -1298,7 +1216,7 @@ function ProgressScreen() {
 function NotFoundScreen() {
   return (
     <div className={stil.screen}>
-      <PageHeading eyebrow="Not found" title="Page unavailable" />
+      <ScreenHeader eyebrow="Not found" title="Page unavailable" />
       <Panel>
         <p className="small">This screen does not exist.</p>
         <Link className={stil.button} to={RouteNames.HOME}>

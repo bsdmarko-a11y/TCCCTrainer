@@ -1,0 +1,29 @@
+.zaglavlje {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.nadnaslov {
+  color: var(--ink-300);
+  text-transform: uppercase;
+}
+
+.red {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.red h1 {
+  min-width: 0;
+}
+
+.red > * + * {
+  flex-shrink: 0;
+}
+
+.opis {
+  color: var(--ink-200);
+}

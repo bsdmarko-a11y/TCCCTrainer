@@ -57,31 +57,18 @@
   gap: var(--space-5);
 }
 
-.pageHeading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
+
 
 .eyebrow {
   color: var(--ink-300);
   text-transform: uppercase;
 }
 
-.headingRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
 
-.headingRow h1 {
-  min-width: 0;
-}
 
-.headingRow > a {
-  flex-shrink: 0;
-}
+
+
+
 
 .panel {
   display: flex;
@@ -188,49 +175,13 @@
   cursor: not-allowed;
 }
 
-.bottomNav {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  width: 100%;
-  max-width: var(--content-max);
-  min-height: calc(var(--nav-h) + env(safe-area-inset-bottom));
-  margin: 0 auto;
-  padding: var(--space-1) var(--space-2) env(safe-area-inset-bottom);
-  border-top: 1px solid var(--border-100);
-  background: var(--surface-200);
-  box-shadow: var(--shadow-nav);
-}
 
-.navItem {
-  display: flex;
-  min-width: 0;
-  min-height: var(--tap-min);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border-radius: var(--radius-md);
-  color: var(--ink-200);
-  font-size: 11px;
-  line-height: 14px;
-  text-decoration: none;
-}
 
-.navActive {
-  background: var(--surface-300);
-  color: var(--brand-400);
-  font-weight: 600;
-}
 
-.navIcon {
-  width: 21px;
-  height: 21px;
-}
+
+
+
+
 
 .stepList {
   display: flex;
@@ -649,10 +600,7 @@
   }
 
   .topBar,
-  .bottomNav,
-  .noPrint {
-    display: none !important;
-  }
+  
 
   .main {
     max-width: none;
@@ -674,4 +622,10 @@
     background: #fff !important;
     color: #111 !important;
   }
+}
+
+/* Ispis kartice nema donju navigaciju, pa ne treba ni prostor za nju. */
+.mainIspis {
+  min-height: auto;
+  padding-bottom: var(--space-5);
 }
