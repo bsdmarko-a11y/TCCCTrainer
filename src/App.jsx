@@ -21,6 +21,12 @@ import scenarios from "./data/scenarios.json";
 import useSwipe, { useArrowKeys } from "./hooks/useSwipe.js";
 import { primeAudio, soundAlert } from "./lib/alerts.js";
 import { RouteNames, STORAGE_KEYS, THEMES } from "./lib/constants.js";
+import {
+  hashString,
+  percentOf,
+  scenarioPick,
+  toneForPercent,
+} from "./lib/scoring.js";
 import stil from "./App.module.css";
 
 const STORAGE_ERROR = "Saved data could not be accessed. Your changes may not persist in this browser.";
@@ -522,8 +528,8 @@ function QuizReviewScreen() {
   const latest = runs[0];
   // Starije spremljene vrijednosti nemaju popis promasaja.
   const wrong = latest?.wrong ?? [];
-  const postotak = latest ? Math.round((latest.score / latest.total) * 100) : 0;
-  const tone = postotak >= 80 ? "ok" : postotak >= 50 ? "warn" : "critical";
+  const postotak = latest ? percentOf(latest.score, latest.total) : 0;
+  const tone = toneForPercent(postotak);
 
   if (!latest) {
     return (
@@ -660,134 +666,195 @@ function ScenarioListScreen() {
 
 function ScenarioRunScreen() {
   const { scenarioId } = useParams();
-  const navigate = useNavigate();
   const scenario = scenarios.scenarios.find((item) => item.id === scenarioId);
-  const [runs, setRuns, storageError] = useStoredState(
+  const [, setRuns, storageError] = useStoredState(
     STORAGE_KEYS.SCENARIO_RUNS,
     [],
   );
-  const [stepIndex, setStepIndex] = useState(0);
-  const [mistakes, setMistakes] = useState(0);
-  const [feedback, setFeedback] = useState(null);
-  const [completed, setCompleted] = useState(false);
+  const [picks, setPicks] = useState([]);
   const saved = useRef(false);
+
+  // Sve mogucnosti stoje na stolu od pocetka. Kad bi se popis kratio kako
+  // koraci prolaze, zadnji bi se sam odao.
+  const options = useMemo(() => {
+    if (!scenario) return [];
+    const all = [...scenario.steps, ...scenario.distractors];
+    // Stalan, ali ne i izvorni redoslijed: isti scenarij izgleda isto svaki
+    // put, a tocni koraci nisu na vrhu popisa. Kljuc je rasprseni niz, ne
+    // umnozak indeksa: umnozak se urusi kad broj mogucnosti podijeli korak.
+    return all
+      .map((option) => ({ option, key: hashString(scenario.id + option.id) }))
+      .sort((a, b) => a.key - b.key)
+      .map((entry) => entry.option);
+  }, [scenario]);
 
   if (!scenario) return <Navigate replace to={RouteNames.SCENARIO} />;
 
-  const currentStep = scenario.steps[stepIndex];
-  const choicePool = [
-    ...scenario.steps.slice(stepIndex),
-    ...scenario.distractors,
-  ];
-  const rotation =
-    (stepIndex * 3 + scenario.id.charCodeAt(1)) % choicePool.length;
-  const choices = [
-    ...choicePool.slice(rotation),
-    ...choicePool.slice(0, rotation),
-  ];
+  const chosenIds = new Set(picks.map((pick) => pick.id));
+  const taken = picks.filter((pick) => pick.advances).length;
+  const done = taken >= scenario.steps.length;
+  const score = picks.reduce((total, pick) => total + pick.points, 0);
+  const percent = percentOf(score, scenario.steps.length);
+  const last = picks[picks.length - 1];
 
   function choose(option) {
-    if (feedback || completed) return;
-    if (option.id !== currentStep.id) {
-      setMistakes((current) => current + 1);
-      setFeedback({
-        correct: false,
-        title:
-          scenario.steps.some((step) => step.id === option.id)
-            ? "That action comes later"
-            : "Not the best choice here",
-        why: option.why,
-      });
-      return;
-    }
+    if (done || chosenIds.has(option.id)) return;
 
-    setFeedback({ correct: true, title: "Good choice", why: option.why });
-    if (stepIndex === scenario.steps.length - 1) {
-      setCompleted(true);
-      if (!saved.current) {
-        saved.current = true;
-        const run = {
-          id: `${scenario.id}-${runs.length + 1}`,
-          scenarioId: scenario.id,
-          title: scenario.title,
-          mistakes,
-        };
-        setRuns((savedRuns) => [run, ...savedRuns]);
-      }
-    }
+    const expectedIndex = picks.filter((pick) => pick.advances).length;
+    const result = scenarioPick(option, expectedIndex, scenario.steps);
+    const pick = { id: option.id, label: option.label, why: option.why, ...result };
+    const next = [...picks, pick];
+    setPicks(next);
+
+    const takenNow = next.filter((item) => item.advances).length;
+    if (takenNow < scenario.steps.length || saved.current) return;
+
+    saved.current = true;
+    const finalScore = next.reduce((total, item) => total + item.points, 0);
+    setRuns((savedRuns) => [
+      {
+        id: `${scenario.id}-${Date.now()}`,
+        at: new Date().toISOString(),
+        scenarioId: scenario.id,
+        title: scenario.title,
+        score: finalScore,
+        total: scenario.steps.length,
+        mistakes: next.filter((item) => item.kind === "distractor").length,
+        picks: next.map((item) => ({ id: item.id, kind: item.kind })),
+      },
+      ...savedRuns,
+    ]);
   }
 
-  function nextStep() {
-    if (completed) {
-      navigate(RouteNames.SCENARIO);
-      return;
-    }
-    setStepIndex((current) => current + 1);
-    setFeedback(null);
+  function restart() {
+    saved.current = false;
+    setPicks([]);
   }
 
   return (
     <div className={stil.screen}>
       <ScreenHeader
-        eyebrow={`Scenario • Step ${stepIndex + 1} of ${scenario.steps.length}`}
+        eyebrow={done ? "Scenario complete" : "Scenario"}
         title={scenario.title}
       />
       {storageError && <StorageWarning message={storageError} />}
+
       <Panel title="Situation">
         <p>{scenario.brief}</p>
       </Panel>
-      {!completed && (
-        <Panel title="What do you do next?">
+
+      <ProgressBar
+        label={done ? "Score" : "Actions taken"}
+        max={scenario.steps.length}
+        showCount
+        tone={done ? toneForPercent(percent) : "accent"}
+        value={done ? score : taken}
+      />
+
+      {!done && (
+        <Panel title={`What do you do ${taken === 0 ? "first" : "next"}?`}>
           <div className={stil.optionList}>
-            {choices.map((choice) => (
+            {options.map((option) => (
               <button
                 className={stil.option}
-                disabled={Boolean(feedback)}
-                key={choice.id}
-                onClick={() => choose(choice)}
+                disabled={chosenIds.has(option.id)}
+                key={option.id}
+                onClick={() => choose(option)}
                 type="button"
               >
-                {choice.label}
+                {option.label}
               </button>
             ))}
           </div>
-          {feedback && (
-            <div className={feedback.correct ? stil.feedbackGood : stil.feedbackBad}>
-              <strong>{feedback.title}</strong>
-              <p className="small">{feedback.why}</p>
-              <button
-                className={stil.button}
-                onClick={feedback.correct ? nextStep : () => setFeedback(null)}
-                type="button"
-              >
-                {feedback.correct
-                  ? completed
-                    ? "Back to scenarios"
-                    : "Continue"
-                  : "Try again"}
-              </button>
+          {last && (
+            <div className={stil[feedbackClass(last.kind)]}>
+              <strong>{feedbackTitle(last.kind)}</strong>
+              <p className="small">{last.why}</p>
             </div>
           )}
         </Panel>
       )}
-      {completed && (
-        <Panel title="Scenario complete">
-          {feedback && (
+
+      {done && (
+        <>
+          <Panel title="How it went">
             <p className="small">
-              {feedback.title}: {feedback.why}
+              {score} of {scenario.steps.length} points. Half a point for the
+              right action at the wrong time, none for an action that did not
+              belong.
             </p>
-          )}
-          <p className="small">
-            You completed the action sequence with {mistakes}{" "}
-            {mistakes === 1 ? "incorrect choice" : "incorrect choices"}.
-          </p>
-          <Link className={stil.button} to={RouteNames.SCENARIO}>
-            Choose another scenario
-          </Link>
-        </Panel>
+          </Panel>
+          <Panel title="Your order against the correct order">
+            <ol className={stil.compareList}>
+              {scenario.steps.map((step, index) => {
+                const pick = picks.filter((item) => item.advances)[index];
+                return (
+                  <li className={stil.compareRow} key={step.id}>
+                    <span className={stil.listNumber}>{index + 1}</span>
+                    <span className={stil.stepText}>
+                      <strong>{step.label}</strong>
+                      {pick && pick.id !== step.id && (
+                        <span className={`small ${stil.reviewWrong}`}>
+                          You chose: {pick.label}
+                        </span>
+                      )}
+                      {pick && pick.id === step.id && (
+                        <span className={`small ${stil.reviewRight}`}>
+                          You chose this here.
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+            {picks.some((pick) => pick.kind === "distractor") && (
+              <>
+                <p className={`caption ${stil.fieldLabel}`}>
+                  Actions that did not belong
+                </p>
+                <ul className={stil.contentList}>
+                  {picks
+                    .filter((pick) => pick.kind === "distractor")
+                    .map((pick) => (
+                      <li key={pick.id}>
+                        <span className={stil.mistakeMark} aria-hidden="true">
+                          !
+                        </span>
+                        <span>
+                          <strong>{pick.label}</strong>
+                          <span className="small"> {pick.why}</span>
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              </>
+            )}
+          </Panel>
+          <div className={stil.buttonRow}>
+            <button className={stil.button} onClick={restart} type="button">
+              Run it again
+            </button>
+            <Link className={stil.secondaryButton} to={RouteNames.SCENARIO}>
+              Choose another
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );
+}
+
+function feedbackClass(kind) {
+  if (kind === "correct") return "feedbackGood";
+  if (kind === "outOfOrder") return "feedbackWarn";
+  return "feedbackBad";
+}
+
+function feedbackTitle(kind) {
+  if (kind === "correct") return "Correct, and in the right order";
+  if (kind === "outOfOrder") return "Right action, wrong time";
+  return "That action did not belong here";
 }
 
 const TQ_SITES = [

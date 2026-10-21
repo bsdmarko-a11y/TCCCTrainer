@@ -757,3 +757,28 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+/* Scenarij: "tocan postupak, krivi trenutak" mora izgledati drukcije
+   i od tocnog i od pogresnog. */
+.feedbackWarn {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--signal-warn);
+  background: var(--surface-300);
+}
+
+.feedbackWarn strong {
+  color: var(--signal-warn);
+}
+
+.compareList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.compareRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
