@@ -11,7 +11,9 @@ import {
 } from "react-router-dom";
 
 import BottomNav from "./components/BottomNav/BottomNav.jsx";
+import ProgressBar from "./components/ProgressBar/ProgressBar.jsx";
 import ScreenHeader from "./components/ScreenHeader/ScreenHeader.jsx";
+import Timer from "./components/Timer/Timer.jsx";
 import casualtyCard from "./data/casualty-card.json";
 import march from "./data/march.json";
 import questions from "./data/questions.json";
@@ -314,10 +316,7 @@ function MarchScreen() {
 
 function QuizScreen() {
   const navigate = useNavigate();
-  const [runs, setRuns, storageError] = useStoredState(
-    STORAGE_KEYS.QUIZ_RUNS,
-    [],
-  );
+  const [, setRuns, storageError] = useStoredState(STORAGE_KEYS.QUIZ_RUNS, []);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [answer, setAnswer] = useState({
@@ -329,6 +328,8 @@ function QuizScreen() {
     seconds: questions.questions[0].seconds,
   });
   const completed = useRef(false);
+  // Svaki odgovor se pamti, da pregled na kraju moze pokazati sto je promaseno.
+  const given = useRef([]);
   const question = questions.questions[index];
   const selected =
     answer.questionId === question.id ? answer.value : null;
@@ -362,15 +363,23 @@ function QuizScreen() {
     if (completed.current) return;
     completed.current = true;
     const run = {
-      id: String(runs.length + 1),
+      id: Date.now().toString(),
+      at: new Date().toISOString(),
       score: finalScore,
       total: questions.questions.length,
+      // picked je -1 kad je vrijeme isteklo.
+      wrong: given.current.filter((a) => a.picked !== a.correct),
     };
     setRuns((savedRuns) => [run, ...savedRuns]);
     navigate(RouteNames.QUIZ_REVIEW);
   }
 
   function advance() {
+    given.current = [
+      ...given.current.filter((a) => a.questionId !== question.id),
+      { questionId: question.id, picked: finalAnswer, correct: question.correct },
+    ];
+
     const updatedScore = score + (finalAnswer === question.correct ? 1 : 0);
     if (index === questions.questions.length - 1) {
       finishQuiz(updatedScore);
@@ -385,19 +394,27 @@ function QuizScreen() {
       <ScreenHeader
         eyebrow={`Question ${index + 1} of ${questions.questions.length}`}
         title="Knowledge quiz"
-        description={`${remaining} seconds remaining`}
       />
       {storageError && <StorageWarning message={storageError} />}
-      <div
-        aria-label={`Question ${index + 1} of ${questions.questions.length}`}
-        className={stil.progressTrack}
-      >
-        <span
-          style={{
-            width: `${((index + 1) / questions.questions.length) * 100}%`,
-          }}
-        />
-      </div>
+      <ProgressBar
+        label="Question"
+        max={questions.questions.length}
+        showCount
+        value={index + 1}
+      />
+      <Timer
+        label="Time remaining"
+        note={
+          hasAnswered
+            ? "Read the feedback, then continue."
+            : remaining <= 10
+              ? "Under ten seconds."
+              : null
+        }
+        seconds={remaining}
+        size="sm"
+        state={hasAnswered ? "stopped" : remaining <= 10 ? "warn" : "running"}
+      />
       <Panel title={question.question}>
         <div className={stil.optionList}>
           {question.options.map((option, optionIndex) => {
@@ -458,39 +475,108 @@ function QuizScreen() {
 
 function QuizReviewScreen() {
   const [runs, , storageError] = useStoredState(STORAGE_KEYS.QUIZ_RUNS, []);
+  const latest = runs[0];
+  // Starije spremljene vrijednosti nemaju popis promasaja.
+  const wrong = latest?.wrong ?? [];
+  const postotak = latest ? Math.round((latest.score / latest.total) * 100) : 0;
+  const tone = postotak >= 80 ? "ok" : postotak >= 50 ? "warn" : "critical";
 
-  return (
-    <div className={stil.screen}>
-      <ScreenHeader
-        eyebrow="Quiz"
-        title="Practice history"
-        description="Quiz scores are stored only in this browser."
-      />
-      {storageError && <StorageWarning message={storageError} />}
-      {runs.length === 0 ? (
+  if (!latest) {
+    return (
+      <div className={stil.screen}>
+        <ScreenHeader eyebrow="Quiz" title="Review" />
+        {storageError && <StorageWarning message={storageError} />}
         <Panel title="No completed quizzes">
           <p className="small">Finish a quiz to see a result here.</p>
           <Link className={stil.button} to={RouteNames.QUIZ}>
             Start a quiz
           </Link>
         </Panel>
-      ) : (
-        <Panel title="Recent results">
+      </div>
+    );
+  }
+
+  return (
+    <div className={stil.screen}>
+      <ScreenHeader
+        eyebrow="Quiz"
+        title="Review"
+        description="Scores are stored only in this browser."
+      />
+      {storageError && <StorageWarning message={storageError} />}
+
+      <Panel title="Your score">
+        <ProgressBar
+          label="Correct"
+          max={latest.total}
+          showCount
+          tone={tone}
+          value={latest.score}
+        />
+        <p className="small">
+          {wrong.length === 0
+            ? "Every question correct."
+            : `${wrong.length} to go over below.`}
+        </p>
+      </Panel>
+
+      {wrong.length > 0 && (
+        <Panel title="What to go over">
+          <ul className={stil.reviewList}>
+            {wrong.map((item) => {
+              const question = questions.questions.find(
+                (q) => q.id === item.questionId,
+              );
+              if (!question) return null;
+              const step = march.steps.find((s) => s.id === question.stepId);
+
+              return (
+                <li className={stil.reviewItem} key={item.questionId}>
+                  <p className={stil.reviewQuestion}>{question.question}</p>
+                  <p className={`small ${stil.reviewWrong}`}>
+                    <strong>You chose:</strong>{" "}
+                    {item.picked === -1
+                      ? "Time expired"
+                      : question.options[item.picked]}
+                  </p>
+                  <p className={`small ${stil.reviewRight}`}>
+                    <strong>Correct:</strong> {question.options[question.correct]}
+                  </p>
+                  <p className="small">{question.why}</p>
+                  {step && (
+                    <Link
+                      className={stil.reviewLink}
+                      to={RouteNames.MARCH_STEP.replace(":stepId", step.id)}
+                    >
+                      Read the {step.title} card
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+      )}
+
+      <Panel title="Earlier attempts">
+        {runs.length === 1 ? (
+          <p className="small">This was your first attempt.</p>
+        ) : (
           <ul className={stil.resultList}>
-            {runs.map((run, index) => (
+            {runs.slice(1, 11).map((run, index) => (
               <li key={run.id}>
                 <span className="score">
                   {run.score}/{run.total}
                 </span>
-                <span className="small">Attempt {runs.length - index}</span>
+                <span className="small">Attempt {runs.length - 1 - index}</span>
               </li>
             ))}
           </ul>
-          <Link className={stil.secondaryButton} to={RouteNames.QUIZ}>
-            Practice again
-          </Link>
-        </Panel>
-      )}
+        )}
+        <Link className={stil.secondaryButton} to={RouteNames.QUIZ}>
+          Practice again
+        </Link>
+      </Panel>
     </div>
   );
 }

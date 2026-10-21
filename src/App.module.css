@@ -278,20 +278,9 @@
   justify-content: space-between;
 }
 
-.progressTrack {
-  height: 8px;
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  background: var(--surface-300);
-}
 
-.progressTrack span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--brand-500);
-  transition: width 150ms ease;
-}
+
+
 
 .optionList {
   display: flex;
@@ -628,4 +617,42 @@
 .mainIspis {
   min-height: auto;
   padding-bottom: var(--space-5);
+}
+
+/* Pregled promasenih odgovora nakon kviza. */
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.reviewItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-100);
+  border-radius: var(--radius-md);
+  background: var(--surface-100);
+}
+
+.reviewQuestion {
+  font-weight: 600;
+  color: var(--ink-100);
+}
+
+.reviewWrong {
+  color: var(--signal-critical);
+}
+
+.reviewRight {
+  color: var(--signal-ok);
+}
+
+.reviewLink {
+  align-self: flex-start;
+  min-height: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-400);
 }

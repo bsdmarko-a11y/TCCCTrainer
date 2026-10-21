@@ -1,0 +1,64 @@
+.traka {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.zaglavlje {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.oznaka {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-300);
+}
+
+.brojac {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-100);
+}
+
+/* Obrub drzi praznu traku vidljivom i u nocnoj temi,
+   gdje su ispuna i podloga obje skoro crne. */
+.staza {
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-100);
+  border-radius: var(--radius-pill);
+  background: var(--surface-300);
+}
+
+.ispuna {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand-400);
+  transition: width 120ms ease;
+}
+
+.ok .ispuna {
+  background: var(--signal-ok);
+}
+
+.warn .ispuna {
+  background: var(--signal-warn);
+}
+
+.critical .ispuna {
+  background: var(--signal-critical);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ispuna {
+    transition: none;
+  }
+}

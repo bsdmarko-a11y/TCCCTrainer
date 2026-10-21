@@ -1,0 +1,65 @@
+.sat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--ink-100);
+}
+
+.zaglavlje {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.oznaka {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-300);
+}
+
+.vrijeme {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-200);
+}
+
+/* Tablicne brojke: sirina se ne mijenja dok sat otkucava. */
+.brojke {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: 46px;
+  line-height: 48px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.biljeska {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-200);
+}
+
+.sm .brojke {
+  font-size: 28px;
+  line-height: 32px;
+}
+
+.stopped .brojke {
+  color: var(--ink-300);
+}
+
+.warn .brojke,
+.warn .biljeska {
+  color: var(--signal-warn);
+}
+
+.alert .brojke,
+.alert .biljeska {
+  color: var(--signal-critical);
+}
