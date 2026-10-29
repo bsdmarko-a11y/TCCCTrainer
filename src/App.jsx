@@ -29,7 +29,8 @@ import {
 } from "./lib/scoring.js";
 import stil from "./App.module.css";
 
-const STORAGE_ERROR = "Saved data could not be accessed. Your changes may not persist in this browser.";
+const STORAGE_ERROR =
+  "Saved data could not be accessed. Your changes may not persist in this browser.";
 
 function useStoredState(key, initialValue) {
   const [initial] = useState(() => {
@@ -87,31 +88,41 @@ function AppShell() {
   // Traka se skriva samo na ispisu kartice, nigdje drugdje.
   const isPrintRoute = location.pathname.endsWith("/ispis");
 
+  // Ispis kartice je uvijek u print temi, bez obzira na odabranu: ono sto se
+  // vidi na zaslonu je onda ono sto izlazi na papir.
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", activeTheme);
-  }, [activeTheme]);
+    document.documentElement.setAttribute(
+      "data-theme",
+      isPrintRoute ? THEMES.PRINT : activeTheme,
+    );
+  }, [activeTheme, isPrintRoute]);
 
   return (
     <div className={stil.app}>
-      <header className={stil.topBar}>
-        <Link className={stil.wordmark} to={RouteNames.HOME}>
-          TCCC <span>TRAINER</span>
-        </Link>
-        <label className={stil.themePicker}>
-          <span className="samo-citac">Color theme</span>
-          <select
-            aria-label="Color theme"
-            value={activeTheme}
-            onChange={(event) => setTheme(event.target.value)}
-          >
-            <option value={THEMES.DARK}>Dark</option>
-            <option value={THEMES.NIGHT}>Night</option>
-            <option value={THEMES.PRINT}>Print</option>
-          </select>
-        </label>
-      </header>
+      {/* Ispis je dokument: bez zaglavlja aplikacije i bez navigacije. */}
+      {!isPrintRoute && (
+        <header className={stil.topBar}>
+          <Link className={stil.wordmark} to={RouteNames.HOME}>
+            TCCC <span>TRAINER</span>
+          </Link>
+          <label className={stil.themePicker}>
+            <span className="samo-citac">Color theme</span>
+            <select
+              aria-label="Color theme"
+              value={activeTheme}
+              onChange={(event) => setTheme(event.target.value)}
+            >
+              <option value={THEMES.DARK}>Dark</option>
+              <option value={THEMES.NIGHT}>Night</option>
+              <option value={THEMES.PRINT}>Print</option>
+            </select>
+          </label>
+        </header>
+      )}
 
-      <main className={isPrintRoute ? `${stil.main} ${stil.mainIspis}` : stil.main}>
+      <main
+        className={isPrintRoute ? `${stil.main} ${stil.mainIspis}` : stil.main}
+      >
         {themeError && <StorageWarning message={themeError} />}
         <Routes>
           <Route path={RouteNames.HOME} element={<HomeScreen />} />
@@ -266,7 +277,9 @@ function MarchScreen() {
                 <strong>{item.title}</strong>
                 <span className="small">{item.note}</span>
               </span>
-              <span className={stil.muted}>{index + 1}/{march.steps.length}</span>
+              <span className={stil.muted}>
+                {index + 1}/{march.steps.length}
+              </span>
             </Link>
           ))}
         </div>
@@ -325,7 +338,9 @@ function MarchStep({ step, index }) {
         <ul className={stil.contentList}>
           {step.mistakes.map((mistake) => (
             <li key={mistake}>
-              <span className={stil.mistakeMark} aria-hidden="true">!</span>
+              <span className={stil.mistakeMark} aria-hidden="true">
+                !
+              </span>
               <span>{mistake}</span>
             </li>
           ))}
@@ -381,8 +396,7 @@ function QuizScreen() {
   // Svaki odgovor se pamti, da pregled na kraju moze pokazati sto je promaseno.
   const given = useRef([]);
   const question = questions.questions[index];
-  const selected =
-    answer.questionId === question.id ? answer.value : null;
+  const selected = answer.questionId === question.id ? answer.value : null;
   const remaining =
     timer.questionId === question.id ? timer.seconds : question.seconds;
   const timedOut = remaining <= 0 && selected === null;
@@ -427,7 +441,11 @@ function QuizScreen() {
   function advance() {
     given.current = [
       ...given.current.filter((a) => a.questionId !== question.id),
-      { questionId: question.id, picked: finalAnswer, correct: question.correct },
+      {
+        questionId: question.id,
+        picked: finalAnswer,
+        correct: question.correct,
+      },
     ];
 
     const updatedScore = score + (finalAnswer === question.correct ? 1 : 0);
@@ -497,7 +515,13 @@ function QuizScreen() {
           })}
         </div>
         {hasAnswered && (
-          <div className={finalAnswer === question.correct ? stil.feedbackGood : stil.feedbackBad}>
+          <div
+            className={
+              finalAnswer === question.correct
+                ? stil.feedbackGood
+                : stil.feedbackBad
+            }
+          >
             <strong>
               {timedOut
                 ? "Time expired"
@@ -516,9 +540,7 @@ function QuizScreen() {
           </button>
         )}
       </Panel>
-      <p className={`caption ${stil.muted}`}>
-        {questions.guidelineVersion}
-      </p>
+      <p className={`caption ${stil.muted}`}>{questions.guidelineVersion}</p>
     </div>
   );
 }
@@ -590,7 +612,8 @@ function QuizReviewScreen() {
                       : question.options[item.picked]}
                   </p>
                   <p className={`small ${stil.reviewRight}`}>
-                    <strong>Correct:</strong> {question.options[question.correct]}
+                    <strong>Correct:</strong>{" "}
+                    {question.options[question.correct]}
                   </p>
                   <p className="small">{question.why}</p>
                   {step && (
@@ -644,10 +667,7 @@ function ScenarioListScreen() {
           <Link
             className={stil.scenarioLink}
             key={scenario.id}
-            to={RouteNames.SCENARIO_RUN.replace(
-              ":scenarioId",
-              scenario.id,
-            )}
+            to={RouteNames.SCENARIO_RUN.replace(":scenarioId", scenario.id)}
           >
             <span className={stil.scenarioNumber}>
               {String(index + 1).padStart(2, "0")}
@@ -656,7 +676,9 @@ function ScenarioListScreen() {
               <strong>{scenario.title}</strong>
               <span className="small">{scenario.brief}</span>
             </span>
-            <span aria-hidden="true" className={stil.modeArrow}>→</span>
+            <span aria-hidden="true" className={stil.modeArrow}>
+              →
+            </span>
           </Link>
         ))}
       </div>
@@ -702,7 +724,12 @@ function ScenarioRunScreen() {
 
     const expectedIndex = picks.filter((pick) => pick.advances).length;
     const result = scenarioPick(option, expectedIndex, scenario.steps);
-    const pick = { id: option.id, label: option.label, why: option.why, ...result };
+    const pick = {
+      id: option.id,
+      label: option.label,
+      why: option.why,
+      ...result,
+    };
     const next = [...picks, pick];
     setPicks(next);
 
@@ -1060,6 +1087,17 @@ function CardListScreen() {
         </Link>
       </ScreenHeader>
       {storageError && <StorageWarning message={storageError} />}
+      <Panel title="Blank card">
+        <p className="small">
+          Print an empty DD1380 to fill in by hand on the lane.
+        </p>
+        <Link
+          className={stil.secondaryButton}
+          to={RouteNames.CARD_PRINT.replace(":cardId", "prazna")}
+        >
+          Print a blank card
+        </Link>
+      </Panel>
       {cards.length === 0 ? (
         <Panel title="No saved cards">
           <p className="small">
@@ -1080,7 +1118,8 @@ function CardListScreen() {
               >
                 <strong>{card.trainingId || "Training card"}</strong>
                 <span className="small">
-                  {card.date || "No date"} • {card.casualtyNumber || "No number"}
+                  {card.date || "No date"} •{" "}
+                  {card.casualtyNumber || "No number"}
                 </span>
               </Link>
               <button
@@ -1186,7 +1225,9 @@ function CardField({ field, value, onChange }) {
     return (
       <fieldset className={stil.fieldGroup}>
         <legend>{field.label}</legend>
-        {field.helper && <p className={`small ${stil.muted}`}>{field.helper}</p>}
+        {field.helper && (
+          <p className={`small ${stil.muted}`}>{field.helper}</p>
+        )}
         {rows.map((row, rowIndex) => (
           <div className={stil.repeatingRow} key={`${field.name}-${rowIndex}`}>
             <p className={`caption ${stil.eyebrow}`}>
@@ -1235,7 +1276,9 @@ function CardField({ field, value, onChange }) {
     return (
       <fieldset className={stil.fieldGroup}>
         <legend>{field.label}</legend>
-        {field.helper && <p className={`small ${stil.muted}`}>{field.helper}</p>}
+        {field.helper && (
+          <p className={`small ${stil.muted}`}>{field.helper}</p>
+        )}
         <div className={stil.choiceGrid}>
           {field.options.map((option) => (
             <label className={stil.choiceLabel} key={option}>
@@ -1262,7 +1305,9 @@ function CardField({ field, value, onChange }) {
     return (
       <fieldset className={stil.fieldGroup}>
         <legend>{field.label}</legend>
-        {field.helper && <p className={`small ${stil.muted}`}>{field.helper}</p>}
+        {field.helper && (
+          <p className={`small ${stil.muted}`}>{field.helper}</p>
+        )}
         <div className={stil.choiceGrid}>
           {field.options.map((option) => (
             <label className={stil.choiceLabel} key={option}>
@@ -1335,76 +1380,376 @@ function makeEmptyGroup(fields) {
   return Object.fromEntries(fields.map((field) => [field.name, ""]));
 }
 
-function CardPrintScreen() {
-  const { cardId } = useParams();
-  const [cards, , storageError] = useStoredState(STORAGE_KEYS.CARDS, []);
-  const card = cards.find((item) => item.id === cardId);
+// Ispis prati raspored DD Form 1380 (JUL 2025), TCCC CARD: prednja strana
+// (roster, EVAC, mehanizam, ozljede s cetiri poveza, znakovi i simptomi) pa
+// straznja (zbrinjavanje C-A-B-C, lijekovi, ostalo, biljeske).
+//
+// Dvije namjerne razlike od sluzbenog obrasca, obje zato sto je ovo vjezba:
+//   - nema polja NAME ni LAST 4; identitet je iskljucivo Training ID
+//   - nema CUI oznaka; oznaciti vjezbovni papir kao CUI bilo bi neistinito
+// Zaglavlje zato izricito pise TRAINING CARD.
 
-  if (!card && !storageError) return <Navigate replace to={RouteNames.CARD} />;
+const DD_MECHANISM = [
+  "Artillery",
+  "Blunt",
+  "Burn",
+  "Fall",
+  "Grenade",
+  "GSW",
+  "IED",
+  "Landmine",
+  "MVC",
+  "RPG",
+];
 
+// Obrazac nudi Urgent/Priority/Routine, a kartica biljezi P1/P2/P3.
+const EVAC_FROM_PRIORITY = { P1: "Urgent", P2: "Priority", P3: "Routine" };
+
+const TQ_CORNERS = [
+  { key: "R Arm", matches: ["Right arm"] },
+  { key: "L Arm", matches: ["Left arm"] },
+  { key: "R Leg", matches: ["Right leg"] },
+  { key: "L Leg", matches: ["Left leg"] },
+];
+
+function Mark({ on }) {
   return (
-    <div className={`${stil.screen} ${stil.printScreen}`}>
-      {storageError && <StorageWarning message={storageError} />}
-      <ScreenHeader eyebrow="Training record" title="Casualty card" />
-      {card && (
-        <>
-          <div className={stil.printGrid}>
-            {casualtyCard.fields.map((field) => (
-              <PrintField
-                field={field}
-                key={field.name}
-                value={card[field.name]}
-              />
-            ))}
-          </div>
-          <div className={`${stil.buttonRow} ${stil.noPrint}`}>
-            <button
-              className={stil.button}
-              onClick={() => window.print()}
-              type="button"
-            >
-              Print
-            </button>
-            <Link className={stil.secondaryButton} to={RouteNames.CARD}>
-              Back to cards
-            </Link>
-          </div>
-        </>
-      )}
-    </div>
+    <span aria-hidden="true" className={stil.ddMark}>
+      {on ? "X" : ""}
+    </span>
   );
 }
 
-function PrintField({ field, value }) {
-  if (
-    value === undefined ||
-    value === "" ||
-    value === false ||
-    (Array.isArray(value) && value.length === 0)
-  ) {
-    return null;
-  }
+function Check({ label, on }) {
+  return (
+    <span className={stil.ddCheck}>
+      <Mark on={on} />
+      {label}
+    </span>
+  );
+}
 
-  let display = value;
-  if (Array.isArray(value)) {
-    display = value
-      .map((item) =>
-        typeof item === "object"
-          ? Object.entries(item)
-              .filter(([, itemValue]) => itemValue !== "" && itemValue !== false)
-              .map(([key, itemValue]) => `${key}: ${itemValue}`)
-              .join(", ")
-          : item,
-      )
-      .join("; ");
-  } else if (typeof value === "boolean") {
-    display = value ? "Yes" : "No";
-  }
+function Slot({ label, value, grow }) {
+  return (
+    <span className={grow ? `${stil.ddSlot} ${stil.ddGrow}` : stil.ddSlot}>
+      <span className={stil.ddSlotLabel}>{label}</span>
+      <span className={stil.ddSlotValue}>{value || " "}</span>
+    </span>
+  );
+}
+
+function has(list, value) {
+  return Array.isArray(list) && list.includes(value);
+}
+
+function CardPrintScreen() {
+  const { cardId } = useParams();
+  const [cards] = useStoredState(STORAGE_KEYS.CARDS, []);
+  const saved = cards.find((item) => item.id === cardId);
+  // Kartica se ispisuje i bez podataka: prazne crte se popunjavaju rukom,
+  // kao na papirnatom obrascu. Nepostojeci cardId daje praznu karticu.
+  const card = saved ?? {};
+  const blank = !saved;
+
+  const tourniquets = Array.isArray(card.tourniquets) ? card.tourniquets : [];
+  const vitals = Array.isArray(card.vitals) ? card.vitals : [];
+  const drugs = Array.isArray(card.drugs) ? card.drugs : [];
+  const evac = EVAC_FROM_PRIORITY[card.medevacPriority];
+  const drugsOf = (category) =>
+    drugs.filter((row) =>
+      (row.category || "").toLowerCase().startsWith(category),
+    );
 
   return (
-    <div className={stil.printField}>
-      <strong>{field.label}</strong>
-      <span>{display}</span>
+    <div className={`${stil.screen} ${stil.printScreen}`}>
+      <div className={`${stil.buttonRow} ${stil.noPrint}`}>
+        <button
+          className={stil.button}
+          onClick={() => window.print()}
+          type="button"
+        >
+          Print
+        </button>
+        <Link className={stil.secondaryButton} to={RouteNames.CARD}>
+          Back to cards
+        </Link>
+      </div>
+
+      {/* ---------------- prednja strana ---------------- */}
+      <section className={stil.ddCard}>
+        <h1 className={stil.ddTitle}>
+          Tactical Combat Casualty Care (TCCC) Card
+          <span className={stil.ddTraining}>
+            {blank
+              ? "Blank training card — fill in by hand"
+              : "Training card — not a medical record"}
+          </span>
+        </h1>
+
+        <div className={stil.ddBand}>
+          <Slot grow label="Battle roster #" value={card.trainingId} />
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>Evac:</span>
+            <Check label="Urgent" on={evac === "Urgent"} />
+            <Check label="Priority" on={evac === "Priority"} />
+            <Check label="Routine" on={evac === "Routine"} />
+          </span>
+        </div>
+
+        <div className={stil.ddBand}>
+          <Slot
+            grow
+            label="Training ID (no name is recorded)"
+            value={card.trainingId}
+          />
+          <Slot label="Casualty #" value={card.casualtyNumber} />
+        </div>
+
+        <div className={stil.ddBand}>
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>Sex:</span>
+            <Check label="M" on={card.sex === "Male"} />
+            <Check label="F" on={card.sex === "Female"} />
+          </span>
+          <Slot label="Date" value={card.date} />
+          <Slot label="Time" value={card.timeOfWounding} />
+          <Slot label="Age" value={card.age} />
+        </div>
+
+        <div className={stil.ddBand}>
+          <Slot label="Unit / lane" value={card.lane} />
+          <Slot grow label="Allergies" value={card.allergies} />
+          <Slot label="Blood type" value={card.bloodType} />
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>
+            Mechanism of Injury (X all that apply)
+          </p>
+          <div className={stil.ddChecks}>
+            {DD_MECHANISM.map((item) => (
+              <Check
+                key={item}
+                label={item}
+                on={
+                  has(card.mechanism, item) ||
+                  (item === "GSW" && has(card.mechanism, "GSW")) ||
+                  (item === "IED" && has(card.mechanism, "Blast")) ||
+                  (item === "MVC" && has(card.mechanism, "MVA"))
+                }
+              />
+            ))}
+            <Check label="Other" on={Boolean(card.mechanismOther)} />
+            <Slot grow label="" value={card.mechanismOther} />
+          </div>
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Injury</p>
+          <div className={stil.ddQuadrants}>
+            {TQ_CORNERS.map((corner) => {
+              const row = tourniquets.find((item) =>
+                corner.matches.includes(item.site),
+              );
+              return (
+                <div className={stil.ddQuadrant} key={corner.key}>
+                  <p className={stil.ddQuadrantTitle}>TQ: {corner.key}</p>
+                  <Slot label="Type" value={row?.note} />
+                  <Slot label="Time" value={row?.timeApplied} />
+                </div>
+              );
+            })}
+          </div>
+          <Slot
+            grow
+            label="Injuries found"
+            value={(card.injuriesFound || []).join(", ")}
+          />
+          <Slot grow label="Injury sites" value={card.injurySites} />
+          <Slot label="Burn TBSA %" value={card.burnTbsa} />
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Signs &amp; Symptoms</p>
+          <table className={stil.ddTable}>
+            <tbody>
+              {[
+                ["Time", (row) => row.time],
+                ["Pulse (rate & location)", (row) => row.pulse],
+                ["Blood pressure", (row) => row.bloodPressure],
+                ["Respiratory rate", (row) => row.respiratoryRate],
+                ["Pulse ox % O2 sat", (row) => row.spo2],
+                ["Temperature", (row) => row.temperature],
+                ["Capillary refill", (row) => row.capillaryRefill],
+              ].map(([label, read]) => (
+                <tr key={label}>
+                  <th scope="row">{label}</th>
+                  {[0, 1, 2, 3].map((column) => (
+                    <td key={column}>
+                      {vitals[column] ? read(vitals[column]) : ""}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+              <tr>
+                <th scope="row">AVPU</th>
+                <td>{card.avpu ? card.avpu.split(" ")[0] : ""}</td>
+                <td>{card.avpuTime}</td>
+                <td colSpan={2}>
+                  {card.gcsScore
+                    ? `GCS ${card.gcsScore} at ${card.gcsTime || "—"}`
+                    : ""}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ---------------- straznja strana ---------------- */}
+      <section className={stil.ddCard}>
+        <p className={stil.ddHeading}>Treatments (X all that apply)</p>
+
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>C:</span>
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>TQ-</span>
+            <Check label="Extremity" on={tourniquets.length > 0} />
+            <Check label="Junctional" on={false} />
+            <Check label="Truncal" on={false} />
+          </span>
+        </div>
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel} />
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>Dressing-</span>
+            <Check
+              label="Hemostatic"
+              on={has(card.massiveBleedingTreatment, "Hemostatic dressing")}
+            />
+            <Check
+              label="Pressure"
+              on={has(card.massiveBleedingTreatment, "Pressure bandage")}
+            />
+            <Check label="Other" on={false} />
+          </span>
+        </div>
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>A:</span>
+          <span className={stil.ddChecks}>
+            <Check label="Intact" on={has(card.airwayTreatment, "Intact")} />
+            <Check
+              label="NPA"
+              on={has(card.airwayTreatment, "NPA (nasopharyngeal airway)")}
+            />
+            <Check
+              label="CRIC"
+              on={has(card.airwayTreatment, "Cricothyroidotomy")}
+            />
+            <Check label="ET-Tube" on={false} />
+            <Check
+              label="SGA"
+              on={has(card.airwayTreatment, "King LT (supraglottic airway)")}
+            />
+          </span>
+        </div>
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>B:</span>
+          <span className={stil.ddChecks}>
+            <Check label="O2" on={false} />
+            <Check
+              label="Needle-D"
+              on={has(card.respirationTreatment, "Needle decompression")}
+            />
+            <Check label="Chest-Tube" on={false} />
+            <Check
+              label="Chest-Seal"
+              on={has(card.respirationTreatment, "Chest seal")}
+            />
+          </span>
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>C: fluids and blood</p>
+          <Slot grow label="IV / IO access" value={card.vascularAccess} />
+          <Slot grow label="Fluid / blood product" value={card.fluids} />
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Meds</p>
+          <table className={stil.ddTable}>
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+                <th scope="col">Name</th>
+                <th scope="col">Dose</th>
+                <th scope="col">Route</th>
+                <th scope="col">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {["analgesic", "antibiotic", "other"].map((category) => {
+                const rows = drugsOf(category);
+                const list = rows.length > 0 ? rows : [{}];
+                return list.map((row, index) => (
+                  <tr key={`${category}-${index}`}>
+                    <th scope="row">{index === 0 ? category : ""}</th>
+                    <td>{row.drug}</td>
+                    <td>{row.dose}</td>
+                    <td>{row.route}</td>
+                    <td>{row.time}</td>
+                  </tr>
+                ));
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>Other:</span>
+          <span className={stil.ddChecks}>
+            <Check label="Combat-Pill-Pack" on={false} />
+            <Check
+              label="Eye-Shield"
+              on={has(card.injuriesFound, "Eye injury")}
+            />
+            <Check label="Splint" on={has(card.injuriesFound, "Fracture")} />
+            <Check
+              label="Hypothermia-Prevention"
+              on={Boolean(card.hypothermiaPrevention)}
+            />
+          </span>
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Notes</p>
+          <div className={stil.ddNotes}>
+            {[
+              ["S", card.signsSymptoms],
+              ["A", card.allergies],
+              ["M", card.medications],
+              ["P", card.pastHistory],
+              ["L", card.lastMeal],
+              ["E", card.events],
+              ["Head injury suspected", card.headInjurySuspected],
+              ["Triage", card.triageCategory],
+              ["Evacuation", card.evacuationMeans],
+              ["Notes", card.notes],
+            ].map(([label, value]) => (
+              <Slot grow key={label} label={label} value={value} />
+            ))}
+          </div>
+        </div>
+
+        <div className={stil.ddBand}>
+          <Slot
+            grow
+            label="First responder (call sign)"
+            value={card.responder}
+          />
+          <Slot label="Arrival time" value={card.arrivalTime} />
+        </div>
+      </section>
     </div>
   );
 }
