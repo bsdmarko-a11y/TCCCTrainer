@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BrowserRouter,
   Link,
-  NavLink,
   Navigate,
   Route,
   Routes,
@@ -11,14 +10,27 @@ import {
   useParams,
 } from "react-router-dom";
 
+import BottomNav from "./components/BottomNav/BottomNav.jsx";
+import ProgressBar from "./components/ProgressBar/ProgressBar.jsx";
+import ScreenHeader from "./components/ScreenHeader/ScreenHeader.jsx";
+import Timer from "./components/Timer/Timer.jsx";
 import casualtyCard from "./data/casualty-card.json";
 import march from "./data/march.json";
 import questions from "./data/questions.json";
 import scenarios from "./data/scenarios.json";
-import { NAV_ITEMS, RouteNames, STORAGE_KEYS, THEMES } from "./lib/constants.js";
+import useSwipe, { useArrowKeys } from "./hooks/useSwipe.js";
+import { primeAudio, soundAlert } from "./lib/alerts.js";
+import { RouteNames, STORAGE_KEYS, THEMES } from "./lib/constants.js";
+import {
+  hashString,
+  percentOf,
+  scenarioPick,
+  toneForPercent,
+} from "./lib/scoring.js";
 import stil from "./App.module.css";
 
-const STORAGE_ERROR = "Saved data could not be accessed. Your changes may not persist in this browser.";
+const STORAGE_ERROR =
+  "Saved data could not be accessed. Your changes may not persist in this browser.";
 
 function useStoredState(key, initialValue) {
   const [initial] = useState(() => {
@@ -73,33 +85,44 @@ function AppShell() {
   const activeTheme = Object.values(THEMES).includes(theme)
     ? theme
     : THEMES.DARK;
-  const isCardRoute = location.pathname.startsWith(RouteNames.CARD);
+  // Traka se skriva samo na ispisu kartice, nigdje drugdje.
+  const isPrintRoute = location.pathname.endsWith("/ispis");
 
+  // Ispis kartice je uvijek u print temi, bez obzira na odabranu: ono sto se
+  // vidi na zaslonu je onda ono sto izlazi na papir.
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", activeTheme);
-  }, [activeTheme]);
+    document.documentElement.setAttribute(
+      "data-theme",
+      isPrintRoute ? THEMES.PRINT : activeTheme,
+    );
+  }, [activeTheme, isPrintRoute]);
 
   return (
     <div className={stil.app}>
-      <header className={stil.topBar}>
-        <Link className={stil.wordmark} to={RouteNames.HOME}>
-          TCCC <span>TRAINER</span>
-        </Link>
-        <label className={stil.themePicker}>
-          <span className="samo-citac">Color theme</span>
-          <select
-            aria-label="Color theme"
-            value={activeTheme}
-            onChange={(event) => setTheme(event.target.value)}
-          >
-            <option value={THEMES.DARK}>Dark</option>
-            <option value={THEMES.NIGHT}>Night</option>
-            <option value={THEMES.PRINT}>Print</option>
-          </select>
-        </label>
-      </header>
+      {/* Ispis je dokument: bez zaglavlja aplikacije i bez navigacije. */}
+      {!isPrintRoute && (
+        <header className={stil.topBar}>
+          <Link className={stil.wordmark} to={RouteNames.HOME}>
+            TCCC <span>TRAINER</span>
+          </Link>
+          <label className={stil.themePicker}>
+            <span className="samo-citac">Color theme</span>
+            <select
+              aria-label="Color theme"
+              value={activeTheme}
+              onChange={(event) => setTheme(event.target.value)}
+            >
+              <option value={THEMES.DARK}>Dark</option>
+              <option value={THEMES.NIGHT}>Night</option>
+              <option value={THEMES.PRINT}>Print</option>
+            </select>
+          </label>
+        </header>
+      )}
 
-      <main className={stil.main}>
+      <main
+        className={isPrintRoute ? `${stil.main} ${stil.mainIspis}` : stil.main}
+      >
         {themeError && <StorageWarning message={themeError} />}
         <Routes>
           <Route path={RouteNames.HOME} element={<HomeScreen />} />
@@ -128,92 +151,8 @@ function AppShell() {
         </Routes>
       </main>
 
-      <nav className={stil.bottomNav} aria-label="Main navigation">
-        {NAV_ITEMS.map((item) => {
-          const active =
-            item.to === RouteNames.CARD
-              ? isCardRoute
-              : undefined;
-          return (
-            <NavLink
-              className={({ isActive }) =>
-                `${stil.navItem} ${active ?? isActive ? stil.navActive : ""}`
-              }
-              end={item.to === RouteNames.HOME}
-              key={item.to}
-              to={item.to}
-            >
-              <NavIcon name={item.icon} />
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
+      {!isPrintRoute && <BottomNav />}
     </div>
-  );
-}
-
-function NavIcon({ name }) {
-  const paths = {
-    home: (
-      <>
-        <path d="m3 10 9-7 9 7" />
-        <path d="M5 9v11h14V9M9 20v-7h6v7" />
-      </>
-    ),
-    guide: (
-      <>
-        <path d="M4 5h16M4 12h16M4 19h16" />
-        <path d="M8 5h.01M8 12h.01M8 19h.01" />
-      </>
-    ),
-    quiz: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.2 1.1-1.8 1.4-1.8 3" />
-        <path d="M12 17h.01" />
-      </>
-    ),
-    timer: (
-      <>
-        <circle cx="12" cy="13" r="8" />
-        <path d="M12 9v4l2.5 1.5M9 2h6M12 2v3" />
-      </>
-    ),
-    card: (
-      <>
-        <rect x="3" y="4" width="18" height="16" rx="2" />
-        <path d="M7 9h10M7 13h6M7 17h4" />
-      </>
-    ),
-  };
-
-  return (
-    <svg
-      aria-hidden="true"
-      className={stil.navIcon}
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.8"
-      viewBox="0 0 24 24"
-    >
-      {paths[name]}
-    </svg>
-  );
-}
-
-function PageHeading({ eyebrow, title, description, children }) {
-  return (
-    <header className={stil.pageHeading}>
-      {eyebrow && <p className={`caption ${stil.eyebrow}`}>{eyebrow}</p>}
-      <div className={stil.headingRow}>
-        <h1 className="screen-title">{title}</h1>
-        {children}
-      </div>
-      {description && <p className="small">{description}</p>}
-    </header>
   );
 }
 
@@ -237,7 +176,7 @@ function StorageWarning({ message }) {
 function HomeScreen() {
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training only"
         title="TCCC Trainer"
         description="Practice the sequence, review your knowledge, and keep training records for the lane."
@@ -313,7 +252,7 @@ function MarchScreen() {
   if (!step) {
     return (
       <div className={stil.screen}>
-        <PageHeading
+        <ScreenHeader
           eyebrow="Field guide"
           title="MARCH-PAWS"
           description={`Reference: ${march.guidelineVersion}`}
@@ -325,12 +264,22 @@ function MarchScreen() {
               key={item.id}
               to={RouteNames.MARCH_STEP.replace(":stepId", item.id)}
             >
-              <span className={stil.stepBadge}>{item.letter}</span>
+              <span
+                className={
+                  item.id === "m"
+                    ? `${stil.stepBadge} ${stil.stepBadgeCritical}`
+                    : stil.stepBadge
+                }
+              >
+                {item.letter}
+              </span>
               <span className={stil.stepText}>
                 <strong>{item.title}</strong>
                 <span className="small">{item.note}</span>
               </span>
-              <span className={stil.muted}>{index + 1}/{march.steps.length}</span>
+              <span className={stil.muted}>
+                {index + 1}/{march.steps.length}
+              </span>
             </Link>
           ))}
         </div>
@@ -338,16 +287,43 @@ function MarchScreen() {
     );
   }
 
-  const previous = march.steps[stepIndex - 1];
-  const next = march.steps[stepIndex + 1];
+  return <MarchStep index={stepIndex} key={step.id} step={step} />;
+}
+
+function MarchStep({ step, index }) {
+  const navigate = useNavigate();
+  const kartica = useRef(null);
+  const previous = march.steps[index - 1];
+  const next = march.steps[index + 1];
+
+  const naKorak = useCallback(
+    (cilj) => {
+      if (cilj) navigate(RouteNames.MARCH_STEP.replace(":stepId", cilj.id));
+    },
+    [navigate],
+  );
+
+  const naLijevo = useCallback(() => naKorak(next), [naKorak, next]);
+  const naDesno = useCallback(() => naKorak(previous), [naKorak, previous]);
+
+  useSwipe(kartica, { onLeft: naLijevo, onRight: naDesno });
+  useArrowKeys({ onLeft: naDesno, onRight: naLijevo });
 
   return (
-    <div className={stil.screen}>
-      <PageHeading
-        eyebrow={`${step.phase} • Step ${stepIndex + 1} of ${march.steps.length}`}
+    <div className={stil.screen} ref={kartica}>
+      <ScreenHeader
+        eyebrow={`${step.phase} • Step ${index + 1} of ${march.steps.length}`}
         title={`${step.letter} — ${step.title}`}
         description={step.note}
       />
+      <ol aria-hidden="true" className={stil.stepDots}>
+        {march.steps.map((item, dot) => (
+          <li
+            className={dot === index ? stil.dotActive : stil.dot}
+            key={item.id}
+          />
+        ))}
+      </ol>
       <Panel title="Actions">
         <ol className={stil.contentList}>
           {step.actions.map((action, index) => (
@@ -362,7 +338,9 @@ function MarchScreen() {
         <ul className={stil.contentList}>
           {step.mistakes.map((mistake) => (
             <li key={mistake}>
-              <span className={stil.mistakeMark} aria-hidden="true">!</span>
+              <span className={stil.mistakeMark} aria-hidden="true">
+                !
+              </span>
               <span>{mistake}</span>
             </li>
           ))}
@@ -381,25 +359,29 @@ function MarchScreen() {
             All topics
           </Link>
         )}
-        {next && (
+        {next ? (
           <Link
             className={stil.button}
             to={RouteNames.MARCH_STEP.replace(":stepId", next.id)}
           >
             Next topic
           </Link>
+        ) : (
+          <Link className={stil.button} to={RouteNames.MARCH}>
+            Back to all topics
+          </Link>
         )}
       </div>
+      <p className={`caption ${stil.swipeHint}`}>
+        Swipe or use the arrow keys to move between topics.
+      </p>
     </div>
   );
 }
 
 function QuizScreen() {
   const navigate = useNavigate();
-  const [runs, setRuns, storageError] = useStoredState(
-    STORAGE_KEYS.QUIZ_RUNS,
-    [],
-  );
+  const [, setRuns, storageError] = useStoredState(STORAGE_KEYS.QUIZ_RUNS, []);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [answer, setAnswer] = useState({
@@ -411,13 +393,10 @@ function QuizScreen() {
     seconds: questions.questions[0].seconds,
   });
   const completed = useRef(false);
+  // Svaki odgovor se pamti, da pregled na kraju moze pokazati sto je promaseno.
+  const given = useRef([]);
   const question = questions.questions[index];
-
-  console.log(question.options)
-  question.options = shuffle(question.options)
-  console.log(question.options)
-  const selected =
-    answer.questionId === question.id ? answer.value : null;
+  const selected = answer.questionId === question.id ? answer.value : null;
   const remaining =
     timer.questionId === question.id ? timer.seconds : question.seconds;
   const timedOut = remaining <= 0 && selected === null;
@@ -442,21 +421,33 @@ function QuizScreen() {
       1000,
     );
     return () => window.clearTimeout(timeout);
-  }, [hasAnswered]);
+  }, [hasAnswered, question.id, question.seconds, remaining]);
 
   function finishQuiz(finalScore) {
     if (completed.current) return;
     completed.current = true;
     const run = {
-      id: String(runs.length + 1),
+      id: Date.now().toString(),
+      at: new Date().toISOString(),
       score: finalScore,
       total: questions.questions.length,
+      // picked je -1 kad je vrijeme isteklo.
+      wrong: given.current.filter((a) => a.picked !== a.correct),
     };
     setRuns((savedRuns) => [run, ...savedRuns]);
     navigate(RouteNames.QUIZ_REVIEW);
   }
 
   function advance() {
+    given.current = [
+      ...given.current.filter((a) => a.questionId !== question.id),
+      {
+        questionId: question.id,
+        picked: finalAnswer,
+        correct: question.correct,
+      },
+    ];
+
     const updatedScore = score + (finalAnswer === question.correct ? 1 : 0);
     if (index === questions.questions.length - 1) {
       finishQuiz(updatedScore);
@@ -466,37 +457,37 @@ function QuizScreen() {
     setIndex((current) => current + 1);
   }
 
-  function shuffle(options){
-    const pomjesano = options
-  .map(({id, q}) => ({ id, q }))
-  .sort(() => Math.random() - 0.5)
-    //console.log(pomjesano)
-  return pomjesano
-  }
-
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow={`Question ${index + 1} of ${questions.questions.length}`}
         title="Knowledge quiz"
-        description={`${remaining} seconds remaining`}
       />
       {storageError && <StorageWarning message={storageError} />}
-      <div
-        aria-label={`Question ${index + 1} of ${questions.questions.length}`}
-        className={stil.progressTrack}
-      >
-        <span
-          style={{
-            width: `${((index + 1) / questions.questions.length) * 100}%`,
-          }}
-        />
-      </div>
+      <ProgressBar
+        label="Question"
+        max={questions.questions.length}
+        showCount
+        value={index + 1}
+      />
+      <Timer
+        label="Time remaining"
+        note={
+          hasAnswered
+            ? "Read the feedback, then continue."
+            : remaining <= 10
+              ? "Under ten seconds."
+              : null
+        }
+        seconds={remaining}
+        size="sm"
+        state={hasAnswered ? "stopped" : remaining <= 10 ? "warn" : "running"}
+      />
       <Panel title={question.question}>
         <div className={stil.optionList}>
           {question.options.map((option, optionIndex) => {
             const isSelected = selected === optionIndex;
-            const isCorrect = option.id === question.correct;
+            const isCorrect = optionIndex === question.correct;
             let optionClass = stil.option;
             if (hasAnswered && isCorrect) {
               optionClass += ` ${stil.optionCorrect}`;
@@ -509,7 +500,7 @@ function QuizScreen() {
                 aria-pressed={isSelected}
                 className={optionClass}
                 disabled={hasAnswered}
-                key={option.id}
+                key={option}
                 onClick={() =>
                   setAnswer({ questionId: question.id, value: optionIndex })
                 }
@@ -518,13 +509,19 @@ function QuizScreen() {
                 <span className={stil.optionLetter}>
                   {String.fromCharCode(65 + optionIndex)}
                 </span>
-                <span>{option.q}</span>
+                <span>{option}</span>
               </button>
             );
           })}
         </div>
         {hasAnswered && (
-          <div className={finalAnswer === question.correct ? stil.feedbackGood : stil.feedbackBad}>
+          <div
+            className={
+              finalAnswer === question.correct
+                ? stil.feedbackGood
+                : stil.feedbackBad
+            }
+          >
             <strong>
               {timedOut
                 ? "Time expired"
@@ -543,48 +540,116 @@ function QuizScreen() {
           </button>
         )}
       </Panel>
-      <p className={`caption ${stil.muted}`}>
-        {questions.guidelineVersion}
-      </p>
+      <p className={`caption ${stil.muted}`}>{questions.guidelineVersion}</p>
     </div>
   );
 }
 
 function QuizReviewScreen() {
   const [runs, , storageError] = useStoredState(STORAGE_KEYS.QUIZ_RUNS, []);
+  const latest = runs[0];
+  // Starije spremljene vrijednosti nemaju popis promasaja.
+  const wrong = latest?.wrong ?? [];
+  const postotak = latest ? percentOf(latest.score, latest.total) : 0;
+  const tone = toneForPercent(postotak);
 
-  return (
-    <div className={stil.screen}>
-      <PageHeading
-        eyebrow="Quiz"
-        title="Practice history"
-        description="Quiz scores are stored only in this browser."
-      />
-      {storageError && <StorageWarning message={storageError} />}
-      {runs.length === 0 ? (
+  if (!latest) {
+    return (
+      <div className={stil.screen}>
+        <ScreenHeader eyebrow="Quiz" title="Review" />
+        {storageError && <StorageWarning message={storageError} />}
         <Panel title="No completed quizzes">
           <p className="small">Finish a quiz to see a result here.</p>
           <Link className={stil.button} to={RouteNames.QUIZ}>
             Start a quiz
           </Link>
         </Panel>
-      ) : (
-        <Panel title="Recent results">
+      </div>
+    );
+  }
+
+  return (
+    <div className={stil.screen}>
+      <ScreenHeader
+        eyebrow="Quiz"
+        title="Review"
+        description="Scores are stored only in this browser."
+      />
+      {storageError && <StorageWarning message={storageError} />}
+
+      <Panel title="Your score">
+        <ProgressBar
+          label="Correct"
+          max={latest.total}
+          showCount
+          tone={tone}
+          value={latest.score}
+        />
+        <p className="small">
+          {wrong.length === 0
+            ? "Every question correct."
+            : `${wrong.length} to go over below.`}
+        </p>
+      </Panel>
+
+      {wrong.length > 0 && (
+        <Panel title="What to go over">
+          <ul className={stil.reviewList}>
+            {wrong.map((item) => {
+              const question = questions.questions.find(
+                (q) => q.id === item.questionId,
+              );
+              if (!question) return null;
+              const step = march.steps.find((s) => s.id === question.stepId);
+
+              return (
+                <li className={stil.reviewItem} key={item.questionId}>
+                  <p className={stil.reviewQuestion}>{question.question}</p>
+                  <p className={`small ${stil.reviewWrong}`}>
+                    <strong>You chose:</strong>{" "}
+                    {item.picked === -1
+                      ? "Time expired"
+                      : question.options[item.picked]}
+                  </p>
+                  <p className={`small ${stil.reviewRight}`}>
+                    <strong>Correct:</strong>{" "}
+                    {question.options[question.correct]}
+                  </p>
+                  <p className="small">{question.why}</p>
+                  {step && (
+                    <Link
+                      className={stil.reviewLink}
+                      to={RouteNames.MARCH_STEP.replace(":stepId", step.id)}
+                    >
+                      Read the {step.title} card
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+      )}
+
+      <Panel title="Earlier attempts">
+        {runs.length === 1 ? (
+          <p className="small">This was your first attempt.</p>
+        ) : (
           <ul className={stil.resultList}>
-            {runs.map((run, index) => (
+            {runs.slice(1, 11).map((run, index) => (
               <li key={run.id}>
                 <span className="score">
                   {run.score}/{run.total}
                 </span>
-                <span className="small">Attempt {runs.length - index}</span>
+                <span className="small">Attempt {runs.length - 1 - index}</span>
               </li>
             ))}
           </ul>
-          <Link className={stil.secondaryButton} to={RouteNames.QUIZ}>
-            Practice again
-          </Link>
-        </Panel>
-      )}
+        )}
+        <Link className={stil.secondaryButton} to={RouteNames.QUIZ}>
+          Practice again
+        </Link>
+      </Panel>
     </div>
   );
 }
@@ -592,7 +657,7 @@ function QuizReviewScreen() {
 function ScenarioListScreen() {
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Decision practice"
         title="Scenarios"
         description="Choose the next appropriate action. Incorrect choices explain why they do not fit the situation."
@@ -602,10 +667,7 @@ function ScenarioListScreen() {
           <Link
             className={stil.scenarioLink}
             key={scenario.id}
-            to={RouteNames.SCENARIO_RUN.replace(
-              ":scenarioId",
-              scenario.id,
-            )}
+            to={RouteNames.SCENARIO_RUN.replace(":scenarioId", scenario.id)}
           >
             <span className={stil.scenarioNumber}>
               {String(index + 1).padStart(2, "0")}
@@ -614,7 +676,9 @@ function ScenarioListScreen() {
               <strong>{scenario.title}</strong>
               <span className="small">{scenario.brief}</span>
             </span>
-            <span aria-hidden="true" className={stil.modeArrow}>→</span>
+            <span aria-hidden="true" className={stil.modeArrow}>
+              →
+            </span>
           </Link>
         ))}
       </div>
@@ -624,229 +688,365 @@ function ScenarioListScreen() {
 
 function ScenarioRunScreen() {
   const { scenarioId } = useParams();
-  const navigate = useNavigate();
   const scenario = scenarios.scenarios.find((item) => item.id === scenarioId);
-  const [runs, setRuns, storageError] = useStoredState(
+  const [, setRuns, storageError] = useStoredState(
     STORAGE_KEYS.SCENARIO_RUNS,
     [],
   );
-  const [stepIndex, setStepIndex] = useState(0);
-  const [mistakes, setMistakes] = useState(0);
-  const [feedback, setFeedback] = useState(null);
-  const [completed, setCompleted] = useState(false);
+  const [picks, setPicks] = useState([]);
   const saved = useRef(false);
+
+  // Sve mogucnosti stoje na stolu od pocetka. Kad bi se popis kratio kako
+  // koraci prolaze, zadnji bi se sam odao.
+  const options = useMemo(() => {
+    if (!scenario) return [];
+    const all = [...scenario.steps, ...scenario.distractors];
+    // Stalan, ali ne i izvorni redoslijed: isti scenarij izgleda isto svaki
+    // put, a tocni koraci nisu na vrhu popisa. Kljuc je rasprseni niz, ne
+    // umnozak indeksa: umnozak se urusi kad broj mogucnosti podijeli korak.
+    return all
+      .map((option) => ({ option, key: hashString(scenario.id + option.id) }))
+      .sort((a, b) => a.key - b.key)
+      .map((entry) => entry.option);
+  }, [scenario]);
 
   if (!scenario) return <Navigate replace to={RouteNames.SCENARIO} />;
 
-  const currentStep = scenario.steps[stepIndex];
-  const choicePool = [
-    ...scenario.steps.slice(stepIndex),
-    ...scenario.distractors,
-  ];
-  const rotation =
-    (stepIndex * 3 + scenario.id.charCodeAt(1)) % choicePool.length;
-  const choices = [
-    ...choicePool.slice(rotation),
-    ...choicePool.slice(0, rotation),
-  ];
+  const chosenIds = new Set(picks.map((pick) => pick.id));
+  const taken = picks.filter((pick) => pick.advances).length;
+  const done = taken >= scenario.steps.length;
+  const score = picks.reduce((total, pick) => total + pick.points, 0);
+  const percent = percentOf(score, scenario.steps.length);
+  const last = picks[picks.length - 1];
 
   function choose(option) {
-    if (feedback || completed) return;
-    if (option.id !== currentStep.id) {
-      setMistakes((current) => current + 1);
-      setFeedback({
-        correct: false,
-        title:
-          scenario.steps.some((step) => step.id === option.id)
-            ? "That action comes later"
-            : "Not the best choice here",
-        why: option.why,
-      });
-      return;
-    }
+    if (done || chosenIds.has(option.id)) return;
 
-    setFeedback({ correct: true, title: "Good choice", why: option.why });
-    if (stepIndex === scenario.steps.length - 1) {
-      setCompleted(true);
-      if (!saved.current) {
-        saved.current = true;
-        const run = {
-          id: `${scenario.id}-${runs.length + 1}`,
-          scenarioId: scenario.id,
-          title: scenario.title,
-          mistakes,
-        };
-        setRuns((savedRuns) => [run, ...savedRuns]);
-      }
-    }
+    const expectedIndex = picks.filter((pick) => pick.advances).length;
+    const result = scenarioPick(option, expectedIndex, scenario.steps);
+    const pick = {
+      id: option.id,
+      label: option.label,
+      why: option.why,
+      ...result,
+    };
+    const next = [...picks, pick];
+    setPicks(next);
+
+    const takenNow = next.filter((item) => item.advances).length;
+    if (takenNow < scenario.steps.length || saved.current) return;
+
+    saved.current = true;
+    const finalScore = next.reduce((total, item) => total + item.points, 0);
+    setRuns((savedRuns) => [
+      {
+        id: `${scenario.id}-${Date.now()}`,
+        at: new Date().toISOString(),
+        scenarioId: scenario.id,
+        title: scenario.title,
+        score: finalScore,
+        total: scenario.steps.length,
+        mistakes: next.filter((item) => item.kind === "distractor").length,
+        picks: next.map((item) => ({ id: item.id, kind: item.kind })),
+      },
+      ...savedRuns,
+    ]);
   }
 
-  function nextStep() {
-    if (completed) {
-      navigate(RouteNames.SCENARIO);
-      return;
-    }
-    setStepIndex((current) => current + 1);
-    setFeedback(null);
+  function restart() {
+    saved.current = false;
+    setPicks([]);
   }
 
   return (
     <div className={stil.screen}>
-      <PageHeading
-        eyebrow={`Scenario • Step ${stepIndex + 1} of ${scenario.steps.length}`}
+      <ScreenHeader
+        eyebrow={done ? "Scenario complete" : "Scenario"}
         title={scenario.title}
       />
       {storageError && <StorageWarning message={storageError} />}
+
       <Panel title="Situation">
         <p>{scenario.brief}</p>
       </Panel>
-      {!completed && (
-        <Panel title="What do you do next?">
+
+      <ProgressBar
+        label={done ? "Score" : "Actions taken"}
+        max={scenario.steps.length}
+        showCount
+        tone={done ? toneForPercent(percent) : "accent"}
+        value={done ? score : taken}
+      />
+
+      {!done && (
+        <Panel title={`What do you do ${taken === 0 ? "first" : "next"}?`}>
           <div className={stil.optionList}>
-            {choices.map((choice) => (
+            {options.map((option) => (
               <button
                 className={stil.option}
-                disabled={Boolean(feedback)}
-                key={choice.id}
-                onClick={() => choose(choice)}
+                disabled={chosenIds.has(option.id)}
+                key={option.id}
+                onClick={() => choose(option)}
                 type="button"
               >
-                {choice.label}
+                {option.label}
               </button>
             ))}
           </div>
-          {feedback && (
-            <div className={feedback.correct ? stil.feedbackGood : stil.feedbackBad}>
-              <strong>{feedback.title}</strong>
-              <p className="small">{feedback.why}</p>
-              <button
-                className={stil.button}
-                onClick={feedback.correct ? nextStep : () => setFeedback(null)}
-                type="button"
-              >
-                {feedback.correct
-                  ? completed
-                    ? "Back to scenarios"
-                    : "Continue"
-                  : "Try again"}
-              </button>
+          {last && (
+            <div className={stil[feedbackClass(last.kind)]}>
+              <strong>{feedbackTitle(last.kind)}</strong>
+              <p className="small">{last.why}</p>
             </div>
           )}
         </Panel>
       )}
-      {completed && (
-        <Panel title="Scenario complete">
-          {feedback && (
+
+      {done && (
+        <>
+          <Panel title="How it went">
             <p className="small">
-              {feedback.title}: {feedback.why}
+              {score} of {scenario.steps.length} points. Half a point for the
+              right action at the wrong time, none for an action that did not
+              belong.
             </p>
-          )}
-          <p className="small">
-            You completed the action sequence with {mistakes}{" "}
-            {mistakes === 1 ? "incorrect choice" : "incorrect choices"}.
-          </p>
-          <Link className={stil.button} to={RouteNames.SCENARIO}>
-            Choose another scenario
-          </Link>
-        </Panel>
+          </Panel>
+          <Panel title="Your order against the correct order">
+            <ol className={stil.compareList}>
+              {scenario.steps.map((step, index) => {
+                const pick = picks.filter((item) => item.advances)[index];
+                return (
+                  <li className={stil.compareRow} key={step.id}>
+                    <span className={stil.listNumber}>{index + 1}</span>
+                    <span className={stil.stepText}>
+                      <strong>{step.label}</strong>
+                      {pick && pick.id !== step.id && (
+                        <span className={`small ${stil.reviewWrong}`}>
+                          You chose: {pick.label}
+                        </span>
+                      )}
+                      {pick && pick.id === step.id && (
+                        <span className={`small ${stil.reviewRight}`}>
+                          You chose this here.
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+            {picks.some((pick) => pick.kind === "distractor") && (
+              <>
+                <p className={`caption ${stil.fieldLabel}`}>
+                  Actions that did not belong
+                </p>
+                <ul className={stil.contentList}>
+                  {picks
+                    .filter((pick) => pick.kind === "distractor")
+                    .map((pick) => (
+                      <li key={pick.id}>
+                        <span className={stil.mistakeMark} aria-hidden="true">
+                          !
+                        </span>
+                        <span>
+                          <strong>{pick.label}</strong>
+                          <span className="small"> {pick.why}</span>
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              </>
+            )}
+          </Panel>
+          <div className={stil.buttonRow}>
+            <button className={stil.button} onClick={restart} type="button">
+              Run it again
+            </button>
+            <Link className={stil.secondaryButton} to={RouteNames.SCENARIO}>
+              Choose another
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );
 }
 
+function feedbackClass(kind) {
+  if (kind === "correct") return "feedbackGood";
+  if (kind === "outOfOrder") return "feedbackWarn";
+  return "feedbackBad";
+}
+
+function feedbackTitle(kind) {
+  if (kind === "correct") return "Correct, and in the right order";
+  if (kind === "outOfOrder") return "Right action, wrong time";
+  return "That action did not belong here";
+}
+
+const TQ_SITES = [
+  "Left arm",
+  "Right arm",
+  "Left leg",
+  "Right leg",
+  "Junctional / other",
+];
+
+// Prag je u sekundama: vjezba primjene poveza ima rok od jedne minute,
+// kako stoji i na kartici M ("stopped within 1 minute").
+const TQ_DEFAULTS = { tqAlertSeconds: 60 };
+
+// Sat se racuna iz spremljenog trenutka primjene, ne iz brojanja otkucaja:
+// zaslon zaspi, kartica se uspori u pozadini, stranica se ponovno ucita -
+// proteklo vrijeme svejedno ostaje tocno.
+function tqElapsed(tq, now) {
+  return Math.max(0, Math.floor((now - tq.startedAt) / 1000));
+}
+
+function wallClock(epoch) {
+  return new Intl.DateTimeFormat([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(epoch));
+}
+
+// Spremljeni oblik se mijenjao: prvo {startedAt, elapsedMs}, zatim popis
+// poveza, sada jedan povez. Sve troje se cita, nista se ne rusi.
+function readTourniquet(stored) {
+  const candidate = Array.isArray(stored) ? stored[0] : stored;
+  if (!candidate || !Number.isFinite(candidate.startedAt)) return null;
+  return {
+    startedAt: candidate.startedAt,
+    limb: candidate.limb ?? "",
+    note: candidate.note ?? "",
+  };
+}
+
 function TourniquetTimerScreen() {
-  const [timer, setTimer, storageError] = useStoredState(STORAGE_KEYS.TQ, {
-    startedAt: null,
-    elapsedMs: 0,
-  });
-  const [now, setNow] = useState(() => Date.now());
-  const running = Number.isFinite(timer.startedAt) && timer.startedAt !== null;
-
-  useEffect(() => {
-    if (!running) return undefined;
-    const interval = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(interval);
-  }, [running]);
-
-  const elapsed = Math.max(
-    0,
-    (Number(timer.elapsedMs) || 0) + (running ? now - timer.startedAt : 0),
+  const [stored, setStored, storageError] = useStoredState(
+    STORAGE_KEYS.TQ,
+    null,
+  );
+  const [savedSettings] = useStoredState(STORAGE_KEYS.SETTINGS, TQ_DEFAULTS);
+  const tourniquet = useMemo(() => readTourniquet(stored), [stored]);
+  const settings = useMemo(
+    () => ({ ...TQ_DEFAULTS, ...savedSettings }),
+    [savedSettings],
   );
 
-  function start() {
+  const [site, setSite] = useState(TQ_SITES[0]);
+  const [note, setNote] = useState("");
+  const [now, setNow] = useState(() => Date.now());
+  const announced = useRef(false);
+
+  useEffect(() => {
+    if (!tourniquet) return undefined;
+    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [tourniquet]);
+
+  const elapsed = tourniquet ? tqElapsed(tourniquet, now) : 0;
+  const overdue = Boolean(tourniquet) && elapsed >= settings.tqAlertSeconds;
+
+  // Oglasi se jednom po primjeni, ne svake sekunde.
+  useEffect(() => {
+    if (!overdue) return;
+    if (announced.current) return;
+    announced.current = true;
+    soundAlert();
+  }, [overdue]);
+
+  function applyTourniquet(event) {
+    event.preventDefault();
+    primeAudio(); // zvuk se smije stvoriti samo na dodir korisnika
+    announced.current = false;
     setNow(Date.now());
-    setTimer((current) => ({
-      ...current,
-      startedAt: Date.now(),
-    }));
+    setStored({ startedAt: Date.now(), limb: site, note: note.trim() });
+    setNote("");
   }
 
-  function pause() {
-    const stoppedAt = Date.now();
-    setTimer((current) => ({
-      elapsedMs:
-        (Number(current.elapsedMs) || 0) + stoppedAt - current.startedAt,
-      startedAt: null,
-    }));
-    setNow(stoppedAt);
-  }
-
-  function reset() {
-    setTimer({ startedAt: null, elapsedMs: 0 });
-    setNow(Date.now());
+  function removeTourniquet() {
+    announced.current = false;
+    setStored(null);
   }
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training timer"
         title="Tourniquet clock"
-        description="Elapsed time for a training device. This timer does not provide medical alerts."
+        description={`One tourniquet. The clock records when it went on and prompts at ${settings.tqAlertSeconds} seconds.`}
       />
       {storageError && <StorageWarning message={storageError} />}
-      <Panel className={stil.timerPanel} title="Elapsed time">
-        <p aria-live="off" className={stil.timerDigits}>
-          {formatDuration(elapsed)}
-        </p>
-        <p className="small">
-          {running ? "Timer running" : elapsed > 0 ? "Timer paused" : "Ready"}
-        </p>
-        <div className={stil.buttonRow}>
-          {running ? (
-            <button className={stil.button} onClick={pause} type="button">
-              Pause
+
+      {tourniquet ? (
+        <Panel title={tourniquet.limb || "Tourniquet"}>
+          <Timer
+            at={wallClock(tourniquet.startedAt)}
+            label="Applied"
+            note={
+              overdue
+                ? `Past ${settings.tqAlertSeconds} seconds. Bleeding should be stopped and the time recorded.`
+                : `Prompt at ${settings.tqAlertSeconds} seconds.`
+            }
+            seconds={elapsed}
+            state={overdue ? "alert" : "running"}
+          />
+          {tourniquet.note && <p className="small">{tourniquet.note}</p>}
+          <div className={stil.buttonRow}>
+            <button
+              className={stil.criticalButton}
+              onClick={removeTourniquet}
+              type="button"
+            >
+              Remove TQ
             </button>
-          ) : (
-            <button className={stil.button} onClick={start} type="button">
-              {elapsed > 0 ? "Resume" : "Start"}
+          </div>
+        </Panel>
+      ) : (
+        <Panel title="Apply a tourniquet">
+          <form className={stil.tqForm} onSubmit={applyTourniquet}>
+            <label className={stil.field}>
+              <span className={`caption ${stil.fieldLabel}`}>Site</span>
+              <select
+                className={stil.input}
+                onChange={(event) => setSite(event.target.value)}
+                value={site}
+              >
+                {TQ_SITES.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={stil.field}>
+              <span className={`caption ${stil.fieldLabel}`}>
+                Note (optional)
+              </span>
+              <input
+                className={stil.input}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder="CAT, high and tight"
+                type="text"
+                value={note}
+              />
+            </label>
+            <button className={stil.startButton} type="submit">
+              Start TQ
+              <span className={stil.startHint}>Records the time now</span>
             </button>
-          )}
-          <button
-            className={stil.secondaryButton}
-            disabled={elapsed === 0}
-            onClick={reset}
-            type="button"
-          >
-            Reset
-          </button>
-        </div>
-      </Panel>
+          </form>
+        </Panel>
+      )}
+
       <p className={stil.safetyNotice}>
-        Use only for training. Follow your course instructions and use a
-        separate, approved timing method for real-world care.
+        Training aid only. The prompt above is a drill cue, not medical advice;
+        follow your course protocol and use an approved method for real care.
       </p>
     </div>
   );
-}
-
-function formatDuration(milliseconds) {
-  const seconds = Math.floor(milliseconds / 1000);
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainder = seconds % 60;
-  return [hours, minutes, remainder]
-    .map((part) => String(part).padStart(2, "0"))
-    .join(":");
 }
 
 function makeEmptyCard() {
@@ -877,7 +1077,7 @@ function CardListScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training records"
         title="Casualty cards"
         description="Cards are stored locally in this browser. Enter training data only—never real patient details."
@@ -885,8 +1085,19 @@ function CardListScreen() {
         <Link className={stil.button} to={RouteNames.CARD_NEW}>
           New card
         </Link>
-      </PageHeading>
+      </ScreenHeader>
       {storageError && <StorageWarning message={storageError} />}
+      <Panel title="Blank card">
+        <p className="small">
+          Print an empty DD1380 to fill in by hand on the lane.
+        </p>
+        <Link
+          className={stil.secondaryButton}
+          to={RouteNames.CARD_PRINT.replace(":cardId", "prazna")}
+        >
+          Print a blank card
+        </Link>
+      </Panel>
       {cards.length === 0 ? (
         <Panel title="No saved cards">
           <p className="small">
@@ -907,7 +1118,8 @@ function CardListScreen() {
               >
                 <strong>{card.trainingId || "Training card"}</strong>
                 <span className="small">
-                  {card.date || "No date"} • {card.casualtyNumber || "No number"}
+                  {card.date || "No date"} •{" "}
+                  {card.casualtyNumber || "No number"}
                 </span>
               </Link>
               <button
@@ -963,7 +1175,7 @@ function CardEditorScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Training record"
         title={existing ? "Edit casualty card" : "New casualty card"}
         description="Use training identifiers only. Do not enter real names, service numbers, or patient data."
@@ -976,7 +1188,7 @@ function CardEditorScreen() {
             Print
           </Link>
         )}
-      </PageHeading>
+      </ScreenHeader>
       {storageError && <StorageWarning message={storageError} />}
       <form className={stil.cardForm} onSubmit={saveCard}>
         {casualtyCard.fields.map((field) => (
@@ -1013,7 +1225,9 @@ function CardField({ field, value, onChange }) {
     return (
       <fieldset className={stil.fieldGroup}>
         <legend>{field.label}</legend>
-        {field.helper && <p className={`small ${stil.muted}`}>{field.helper}</p>}
+        {field.helper && (
+          <p className={`small ${stil.muted}`}>{field.helper}</p>
+        )}
         {rows.map((row, rowIndex) => (
           <div className={stil.repeatingRow} key={`${field.name}-${rowIndex}`}>
             <p className={`caption ${stil.eyebrow}`}>
@@ -1062,7 +1276,9 @@ function CardField({ field, value, onChange }) {
     return (
       <fieldset className={stil.fieldGroup}>
         <legend>{field.label}</legend>
-        {field.helper && <p className={`small ${stil.muted}`}>{field.helper}</p>}
+        {field.helper && (
+          <p className={`small ${stil.muted}`}>{field.helper}</p>
+        )}
         <div className={stil.choiceGrid}>
           {field.options.map((option) => (
             <label className={stil.choiceLabel} key={option}>
@@ -1089,7 +1305,9 @@ function CardField({ field, value, onChange }) {
     return (
       <fieldset className={stil.fieldGroup}>
         <legend>{field.label}</legend>
-        {field.helper && <p className={`small ${stil.muted}`}>{field.helper}</p>}
+        {field.helper && (
+          <p className={`small ${stil.muted}`}>{field.helper}</p>
+        )}
         <div className={stil.choiceGrid}>
           {field.options.map((option) => (
             <label className={stil.choiceLabel} key={option}>
@@ -1162,76 +1380,376 @@ function makeEmptyGroup(fields) {
   return Object.fromEntries(fields.map((field) => [field.name, ""]));
 }
 
-function CardPrintScreen() {
-  const { cardId } = useParams();
-  const [cards, , storageError] = useStoredState(STORAGE_KEYS.CARDS, []);
-  const card = cards.find((item) => item.id === cardId);
+// Ispis prati raspored DD Form 1380 (JUL 2025), TCCC CARD: prednja strana
+// (roster, EVAC, mehanizam, ozljede s cetiri poveza, znakovi i simptomi) pa
+// straznja (zbrinjavanje C-A-B-C, lijekovi, ostalo, biljeske).
+//
+// Dvije namjerne razlike od sluzbenog obrasca, obje zato sto je ovo vjezba:
+//   - nema polja NAME ni LAST 4; identitet je iskljucivo Training ID
+//   - nema CUI oznaka; oznaciti vjezbovni papir kao CUI bilo bi neistinito
+// Zaglavlje zato izricito pise TRAINING CARD.
 
-  if (!card && !storageError) return <Navigate replace to={RouteNames.CARD} />;
+const DD_MECHANISM = [
+  "Artillery",
+  "Blunt",
+  "Burn",
+  "Fall",
+  "Grenade",
+  "GSW",
+  "IED",
+  "Landmine",
+  "MVC",
+  "RPG",
+];
 
+// Obrazac nudi Urgent/Priority/Routine, a kartica biljezi P1/P2/P3.
+const EVAC_FROM_PRIORITY = { P1: "Urgent", P2: "Priority", P3: "Routine" };
+
+const TQ_CORNERS = [
+  { key: "R Arm", matches: ["Right arm"] },
+  { key: "L Arm", matches: ["Left arm"] },
+  { key: "R Leg", matches: ["Right leg"] },
+  { key: "L Leg", matches: ["Left leg"] },
+];
+
+function Mark({ on }) {
   return (
-    <div className={`${stil.screen} ${stil.printScreen}`}>
-      {storageError && <StorageWarning message={storageError} />}
-      <PageHeading eyebrow="Training record" title="Casualty card" />
-      {card && (
-        <>
-          <div className={stil.printGrid}>
-            {casualtyCard.fields.map((field) => (
-              <PrintField
-                field={field}
-                key={field.name}
-                value={card[field.name]}
-              />
-            ))}
-          </div>
-          <div className={`${stil.buttonRow} ${stil.noPrint}`}>
-            <button
-              className={stil.button}
-              onClick={() => window.print()}
-              type="button"
-            >
-              Print
-            </button>
-            <Link className={stil.secondaryButton} to={RouteNames.CARD}>
-              Back to cards
-            </Link>
-          </div>
-        </>
-      )}
-    </div>
+    <span aria-hidden="true" className={stil.ddMark}>
+      {on ? "X" : ""}
+    </span>
   );
 }
 
-function PrintField({ field, value }) {
-  if (
-    value === undefined ||
-    value === "" ||
-    value === false ||
-    (Array.isArray(value) && value.length === 0)
-  ) {
-    return null;
-  }
+function Check({ label, on }) {
+  return (
+    <span className={stil.ddCheck}>
+      <Mark on={on} />
+      {label}
+    </span>
+  );
+}
 
-  let display = value;
-  if (Array.isArray(value)) {
-    display = value
-      .map((item) =>
-        typeof item === "object"
-          ? Object.entries(item)
-              .filter(([, itemValue]) => itemValue !== "" && itemValue !== false)
-              .map(([key, itemValue]) => `${key}: ${itemValue}`)
-              .join(", ")
-          : item,
-      )
-      .join("; ");
-  } else if (typeof value === "boolean") {
-    display = value ? "Yes" : "No";
-  }
+function Slot({ label, value, grow }) {
+  return (
+    <span className={grow ? `${stil.ddSlot} ${stil.ddGrow}` : stil.ddSlot}>
+      <span className={stil.ddSlotLabel}>{label}</span>
+      <span className={stil.ddSlotValue}>{value || " "}</span>
+    </span>
+  );
+}
+
+function has(list, value) {
+  return Array.isArray(list) && list.includes(value);
+}
+
+function CardPrintScreen() {
+  const { cardId } = useParams();
+  const [cards] = useStoredState(STORAGE_KEYS.CARDS, []);
+  const saved = cards.find((item) => item.id === cardId);
+  // Kartica se ispisuje i bez podataka: prazne crte se popunjavaju rukom,
+  // kao na papirnatom obrascu. Nepostojeci cardId daje praznu karticu.
+  const card = saved ?? {};
+  const blank = !saved;
+
+  const tourniquets = Array.isArray(card.tourniquets) ? card.tourniquets : [];
+  const vitals = Array.isArray(card.vitals) ? card.vitals : [];
+  const drugs = Array.isArray(card.drugs) ? card.drugs : [];
+  const evac = EVAC_FROM_PRIORITY[card.medevacPriority];
+  const drugsOf = (category) =>
+    drugs.filter((row) =>
+      (row.category || "").toLowerCase().startsWith(category),
+    );
 
   return (
-    <div className={stil.printField}>
-      <strong>{field.label}</strong>
-      <span>{display}</span>
+    <div className={`${stil.screen} ${stil.printScreen}`}>
+      <div className={`${stil.buttonRow} ${stil.noPrint}`}>
+        <button
+          className={stil.button}
+          onClick={() => window.print()}
+          type="button"
+        >
+          Print
+        </button>
+        <Link className={stil.secondaryButton} to={RouteNames.CARD}>
+          Back to cards
+        </Link>
+      </div>
+
+      {/* ---------------- prednja strana ---------------- */}
+      <section className={stil.ddCard}>
+        <h1 className={stil.ddTitle}>
+          Tactical Combat Casualty Care (TCCC) Card
+          <span className={stil.ddTraining}>
+            {blank
+              ? "Blank training card — fill in by hand"
+              : "Training card — not a medical record"}
+          </span>
+        </h1>
+
+        <div className={stil.ddBand}>
+          <Slot grow label="Battle roster #" value={card.trainingId} />
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>Evac:</span>
+            <Check label="Urgent" on={evac === "Urgent"} />
+            <Check label="Priority" on={evac === "Priority"} />
+            <Check label="Routine" on={evac === "Routine"} />
+          </span>
+        </div>
+
+        <div className={stil.ddBand}>
+          <Slot
+            grow
+            label="Training ID (no name is recorded)"
+            value={card.trainingId}
+          />
+          <Slot label="Casualty #" value={card.casualtyNumber} />
+        </div>
+
+        <div className={stil.ddBand}>
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>Sex:</span>
+            <Check label="M" on={card.sex === "Male"} />
+            <Check label="F" on={card.sex === "Female"} />
+          </span>
+          <Slot label="Date" value={card.date} />
+          <Slot label="Time" value={card.timeOfWounding} />
+          <Slot label="Age" value={card.age} />
+        </div>
+
+        <div className={stil.ddBand}>
+          <Slot label="Unit / lane" value={card.lane} />
+          <Slot grow label="Allergies" value={card.allergies} />
+          <Slot label="Blood type" value={card.bloodType} />
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>
+            Mechanism of Injury (X all that apply)
+          </p>
+          <div className={stil.ddChecks}>
+            {DD_MECHANISM.map((item) => (
+              <Check
+                key={item}
+                label={item}
+                on={
+                  has(card.mechanism, item) ||
+                  (item === "GSW" && has(card.mechanism, "GSW")) ||
+                  (item === "IED" && has(card.mechanism, "Blast")) ||
+                  (item === "MVC" && has(card.mechanism, "MVA"))
+                }
+              />
+            ))}
+            <Check label="Other" on={Boolean(card.mechanismOther)} />
+            <Slot grow label="" value={card.mechanismOther} />
+          </div>
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Injury</p>
+          <div className={stil.ddQuadrants}>
+            {TQ_CORNERS.map((corner) => {
+              const row = tourniquets.find((item) =>
+                corner.matches.includes(item.site),
+              );
+              return (
+                <div className={stil.ddQuadrant} key={corner.key}>
+                  <p className={stil.ddQuadrantTitle}>TQ: {corner.key}</p>
+                  <Slot label="Type" value={row?.note} />
+                  <Slot label="Time" value={row?.timeApplied} />
+                </div>
+              );
+            })}
+          </div>
+          <Slot
+            grow
+            label="Injuries found"
+            value={(card.injuriesFound || []).join(", ")}
+          />
+          <Slot grow label="Injury sites" value={card.injurySites} />
+          <Slot label="Burn TBSA %" value={card.burnTbsa} />
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Signs &amp; Symptoms</p>
+          <table className={stil.ddTable}>
+            <tbody>
+              {[
+                ["Time", (row) => row.time],
+                ["Pulse (rate & location)", (row) => row.pulse],
+                ["Blood pressure", (row) => row.bloodPressure],
+                ["Respiratory rate", (row) => row.respiratoryRate],
+                ["Pulse ox % O2 sat", (row) => row.spo2],
+                ["Temperature", (row) => row.temperature],
+                ["Capillary refill", (row) => row.capillaryRefill],
+              ].map(([label, read]) => (
+                <tr key={label}>
+                  <th scope="row">{label}</th>
+                  {[0, 1, 2, 3].map((column) => (
+                    <td key={column}>
+                      {vitals[column] ? read(vitals[column]) : ""}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+              <tr>
+                <th scope="row">AVPU</th>
+                <td>{card.avpu ? card.avpu.split(" ")[0] : ""}</td>
+                <td>{card.avpuTime}</td>
+                <td colSpan={2}>
+                  {card.gcsScore
+                    ? `GCS ${card.gcsScore} at ${card.gcsTime || "—"}`
+                    : ""}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ---------------- straznja strana ---------------- */}
+      <section className={stil.ddCard}>
+        <p className={stil.ddHeading}>Treatments (X all that apply)</p>
+
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>C:</span>
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>TQ-</span>
+            <Check label="Extremity" on={tourniquets.length > 0} />
+            <Check label="Junctional" on={false} />
+            <Check label="Truncal" on={false} />
+          </span>
+        </div>
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel} />
+          <span className={stil.ddChecks}>
+            <span className={stil.ddSlotLabel}>Dressing-</span>
+            <Check
+              label="Hemostatic"
+              on={has(card.massiveBleedingTreatment, "Hemostatic dressing")}
+            />
+            <Check
+              label="Pressure"
+              on={has(card.massiveBleedingTreatment, "Pressure bandage")}
+            />
+            <Check label="Other" on={false} />
+          </span>
+        </div>
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>A:</span>
+          <span className={stil.ddChecks}>
+            <Check label="Intact" on={has(card.airwayTreatment, "Intact")} />
+            <Check
+              label="NPA"
+              on={has(card.airwayTreatment, "NPA (nasopharyngeal airway)")}
+            />
+            <Check
+              label="CRIC"
+              on={has(card.airwayTreatment, "Cricothyroidotomy")}
+            />
+            <Check label="ET-Tube" on={false} />
+            <Check
+              label="SGA"
+              on={has(card.airwayTreatment, "King LT (supraglottic airway)")}
+            />
+          </span>
+        </div>
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>B:</span>
+          <span className={stil.ddChecks}>
+            <Check label="O2" on={false} />
+            <Check
+              label="Needle-D"
+              on={has(card.respirationTreatment, "Needle decompression")}
+            />
+            <Check label="Chest-Tube" on={false} />
+            <Check
+              label="Chest-Seal"
+              on={has(card.respirationTreatment, "Chest seal")}
+            />
+          </span>
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>C: fluids and blood</p>
+          <Slot grow label="IV / IO access" value={card.vascularAccess} />
+          <Slot grow label="Fluid / blood product" value={card.fluids} />
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Meds</p>
+          <table className={stil.ddTable}>
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+                <th scope="col">Name</th>
+                <th scope="col">Dose</th>
+                <th scope="col">Route</th>
+                <th scope="col">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {["analgesic", "antibiotic", "other"].map((category) => {
+                const rows = drugsOf(category);
+                const list = rows.length > 0 ? rows : [{}];
+                return list.map((row, index) => (
+                  <tr key={`${category}-${index}`}>
+                    <th scope="row">{index === 0 ? category : ""}</th>
+                    <td>{row.drug}</td>
+                    <td>{row.dose}</td>
+                    <td>{row.route}</td>
+                    <td>{row.time}</td>
+                  </tr>
+                ));
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={stil.ddBand}>
+          <span className={stil.ddRowLabel}>Other:</span>
+          <span className={stil.ddChecks}>
+            <Check label="Combat-Pill-Pack" on={false} />
+            <Check
+              label="Eye-Shield"
+              on={has(card.injuriesFound, "Eye injury")}
+            />
+            <Check label="Splint" on={has(card.injuriesFound, "Fracture")} />
+            <Check
+              label="Hypothermia-Prevention"
+              on={Boolean(card.hypothermiaPrevention)}
+            />
+          </span>
+        </div>
+
+        <div className={stil.ddSection}>
+          <p className={stil.ddHeading}>Notes</p>
+          <div className={stil.ddNotes}>
+            {[
+              ["S", card.signsSymptoms],
+              ["A", card.allergies],
+              ["M", card.medications],
+              ["P", card.pastHistory],
+              ["L", card.lastMeal],
+              ["E", card.events],
+              ["Head injury suspected", card.headInjurySuspected],
+              ["Triage", card.triageCategory],
+              ["Evacuation", card.evacuationMeans],
+              ["Notes", card.notes],
+            ].map(([label, value]) => (
+              <Slot grow key={label} label={label} value={value} />
+            ))}
+          </div>
+        </div>
+
+        <div className={stil.ddBand}>
+          <Slot
+            grow
+            label="First responder (call sign)"
+            value={card.responder}
+          />
+          <Slot label="Arrival time" value={card.arrivalTime} />
+        </div>
+      </section>
     </div>
   );
 }
@@ -1254,7 +1772,7 @@ function ProgressScreen() {
 
   return (
     <div className={stil.screen}>
-      <PageHeading
+      <ScreenHeader
         eyebrow="Local to this browser"
         title="Progress"
         description="Practice history is saved on this device only."
@@ -1310,7 +1828,7 @@ function ProgressScreen() {
 function NotFoundScreen() {
   return (
     <div className={stil.screen}>
-      <PageHeading eyebrow="Not found" title="Page unavailable" />
+      <ScreenHeader eyebrow="Not found" title="Page unavailable" />
       <Panel>
         <p className="small">This screen does not exist.</p>
         <Link className={stil.button} to={RouteNames.HOME}>

@@ -57,31 +57,18 @@
   gap: var(--space-5);
 }
 
-.pageHeading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
+
 
 .eyebrow {
   color: var(--ink-300);
   text-transform: uppercase;
 }
 
-.headingRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
 
-.headingRow h1 {
-  min-width: 0;
-}
 
-.headingRow > a {
-  flex-shrink: 0;
-}
+
+
+
 
 .panel {
   display: flex;
@@ -188,49 +175,13 @@
   cursor: not-allowed;
 }
 
-.bottomNav {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  width: 100%;
-  max-width: var(--content-max);
-  min-height: calc(var(--nav-h) + env(safe-area-inset-bottom));
-  margin: 0 auto;
-  padding: var(--space-1) var(--space-2) env(safe-area-inset-bottom);
-  border-top: 1px solid var(--border-100);
-  background: var(--surface-200);
-  box-shadow: var(--shadow-nav);
-}
 
-.navItem {
-  display: flex;
-  min-width: 0;
-  min-height: var(--tap-min);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border-radius: var(--radius-md);
-  color: var(--ink-200);
-  font-size: 11px;
-  line-height: 14px;
-  text-decoration: none;
-}
 
-.navActive {
-  background: var(--surface-300);
-  color: var(--brand-400);
-  font-weight: 600;
-}
 
-.navIcon {
-  width: 21px;
-  height: 21px;
-}
+
+
+
+
 
 .stepList {
   display: flex;
@@ -327,20 +278,9 @@
   justify-content: space-between;
 }
 
-.progressTrack {
-  height: 8px;
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  background: var(--surface-300);
-}
 
-.progressTrack span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--brand-500);
-  transition: width 150ms ease;
-}
+
+
 
 .optionList {
   display: flex;
@@ -442,20 +382,9 @@
   gap: var(--space-1);
 }
 
-.timerPanel {
-  align-items: center;
-  padding: var(--space-6) var(--space-4);
-  text-align: center;
-}
 
-.timerDigits {
-  color: var(--brand-400);
-  font-family: var(--font-mono);
-  font-size: 46px;
-  font-weight: 600;
-  line-height: 48px;
-  font-variant-numeric: tabular-nums;
-}
+
+
 
 .warning {
   padding: var(--space-3);
@@ -598,28 +527,6 @@
   line-height: 36px;
 }
 
-.printGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-2);
-}
-
-.printField {
-  display: flex;
-  min-height: 52px;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-2);
-  border: 1px solid var(--border-100);
-  border-radius: var(--radius-sm);
-  overflow-wrap: anywhere;
-}
-
-.printField strong {
-  color: var(--ink-300);
-  font-size: 12px;
-}
-
 @media (min-width: 600px) {
   .topBar {
     padding-right: var(--space-5);
@@ -636,20 +543,25 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .printGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+/* Zaslon za ispis se prikazuje u print temi (postavlja je App.jsx), pa sve
+   boje dolaze iz tokena. Ovdje ostaje samo ono sto se tice papira. */
+.printScreen {
+  gap: var(--space-4);
+}
+
+/* Vidljivo na zaslonu, nikad na papiru. */
+.noPrint {
+  display: flex;
 }
 
 @media print {
-  :global(body),
-  .app {
-    background: #fff !important;
-    color: #111 !important;
+  @page {
+    margin: 12mm;
   }
 
   .topBar,
-  .bottomNav,
   .noPrint {
     display: none !important;
   }
@@ -661,17 +573,398 @@
   }
 
   .screen {
-    gap: 8px;
+    gap: var(--space-2);
   }
 
-  .printGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+    }
 
-  .printField {
-    break-inside: avoid;
-    border-color: #777;
-    background: #fff !important;
-    color: #111 !important;
-  }
+/* Ispis kartice nema donju navigaciju, pa ne treba ni prostor za nju. */
+.mainIspis {
+  min-height: auto;
+  padding-bottom: var(--space-5);
+}
+
+/* Pregled promasenih odgovora nakon kviza. */
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.reviewItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-100);
+  border-radius: var(--radius-md);
+  background: var(--surface-100);
+}
+
+.reviewQuestion {
+  font-weight: 600;
+  color: var(--ink-100);
+}
+
+.reviewWrong {
+  color: var(--signal-critical);
+}
+
+.reviewRight {
+  color: var(--signal-ok);
+}
+
+.reviewLink {
+  align-self: flex-start;
+  min-height: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-400);
+}
+
+/* Samo kartica M smije nositi kriticnu boju, i to samo na znacki. */
+.stepBadgeCritical {
+  background: var(--signal-critical);
+  color: var(--ink-on-brand);
+}
+
+/* Tockice polozaja. Nisu kontrola - skakanje na korak ide preko popisa,
+   jer devet meta od 48px ne stane na zaslon od 360px. */
+.stepDots {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dot,
+.dotActive {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-300);
+  border: 1px solid var(--border-100);
+}
+
+.dotActive {
+  width: 24px;
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+}
+
+.swipeHint {
+  color: var(--ink-300);
+}
+
+/* Povez: obrazac za primjenu i popis satova. */
+.tqForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fieldLabel {
+  color: var(--ink-300);
+  text-transform: uppercase;
+}
+
+.input {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-100);
+  border-radius: var(--radius-sm);
+  background: var(--surface-300);
+  color: var(--ink-100);
+}
+
+.input::placeholder {
+  color: var(--ink-300);
+}
+
+/* Meta koju se pogadja dok se gleda u unesrecenog, ne u zaslon. */
+.startButton {
+  display: flex;
+  min-height: var(--tap-xl);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--brand-500);
+  color: var(--ink-on-brand);
+  font-family: var(--font-display);
+  font-size: 21px;
+  line-height: 26px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.startButton:active {
+  background: var(--brand-600);
+}
+
+.startHint {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+
+.criticalButton {
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--signal-critical);
+  color: var(--ink-on-brand);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Scenarij: "tocan postupak, krivi trenutak" mora izgledati drukcije
+   i od tocnog i od pogresnog. */
+.feedbackWarn {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--signal-warn);
+  background: var(--surface-300);
+}
+
+.feedbackWarn strong {
+  color: var(--signal-warn);
+}
+
+.compareList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.compareRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+/* Stoji i na zaslonu i na papiru: otisnuta kartica se ne smije zamijeniti
+   sa stvarnim medicinskim zapisom. */
+.printDisclaimer {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--signal-critical);
+  border-radius: var(--radius-sm);
+  color: var(--signal-critical);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+/* ---- Raspored po DD Form 1380 (TCCC CARD) ---- */
+
+.ddCard {
+  border: 2px solid var(--ink-100);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--surface-000);
+  color: var(--ink-100);
+}
+
+.ddTitle {
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--ink-100);
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ddTraining {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--signal-critical);
+}
+
+.ddBand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2) var(--space-3);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px dashed var(--border-100);
+}
+
+.ddSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--ink-100);
+}
+
+.ddHeading {
+  margin: 0;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ddRowLabel {
+  min-width: 2.2em;
+  font-weight: 700;
+}
+
+/* Polje s crtom ispod, kao na papiru. */
+.ddSlot {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 5.5em;
+}
+
+.ddGrow {
+  flex: 1 1 12em;
+}
+
+.ddSlotLabel {
+  font-size: 10px;
+  line-height: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-200);
+}
+
+.ddSlotValue {
+  min-height: 18px;
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--ink-100);
+  font-size: 13px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+.ddChecks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
+.ddCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ddMark {
+  display: inline-grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--ink-100);
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.ddQuadrants {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.ddQuadrant {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  border: 1px solid var(--border-100);
+  border-radius: var(--radius-sm);
+}
+
+.ddQuadrantTitle {
+  margin: 0;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.ddTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.ddTable th,
+.ddTable td {
+  border: 1px solid var(--ink-100);
+  padding: 3px 5px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.ddTable th[scope="row"] {
+  width: 38%;
+  font-weight: 700;
+  font-style: italic;
+  background: var(--surface-200);
+  text-transform: capitalize;
+}
+
+.ddTable thead th {
+  font-weight: 700;
+  background: var(--surface-200);
+}
+
+.ddNotes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: 60px;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.ddNotes p {
+  margin: 0;
+}
+
+/* .ddGrow raste po sirini unutar retka; u stupcu (ddSection) bi rastao po
+   visini i ostavljao prazninu, pa se tamo ne siri. */
+.ddSection > .ddSlot {
+  flex: 0 0 auto;
+}
+
+/* Biljeske su stupac praznih crta za rukopis; ne rastu po visini. */
+.ddNotes > .ddSlot {
+  flex: 0 0 auto;
 }

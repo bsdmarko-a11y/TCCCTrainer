@@ -6,12 +6,12 @@
       "stepId": "m",
       "question": "What is the single medical priority during Care Under Fire?",
       "options": [
-        { "id": 1, "q": "Control of life-threatening bleeding" },
-        { "id": 2, "q": "Airway management" },
-        { "id": 3, "q": "Hypothermia prevention" },
-        { "id": 4, "q": "Splinting of fractures" }
+        "Airway management",
+        "Splinting of fractures",
+        "Control of life-threatening bleeding",
+        "Hypothermia prevention"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 30,
       "why": "Under fire the only medical priority is stopping life-threatening bleeding; everything else waits for Tactical Field Care."
     },
@@ -20,12 +20,12 @@
       "stepId": "m",
       "question": "Where does a hasty tourniquet go on a bleeding limb under fire?",
       "options": [
-        { "id": 1, "q": "High and tight over the clothing" },
-        { "id": 2, "q": "Two inches above the wound on bare skin" },
-        { "id": 3, "q": "Directly across the wound" },
-        { "id": 4, "q": "Across the nearest joint" }
+        "High and tight over the clothing",
+        "Directly across the wound",
+        "Two inches above the wound on bare skin",
+        "Across the nearest joint"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "Under fire the tourniquet goes high and tight over the uniform, because you have no time to find the exact bleeding site."
     },
@@ -34,12 +34,12 @@
       "stepId": "m",
       "question": "Where does a deliberate tourniquet go once you are in Tactical Field Care?",
       "options": [
-        { "id": 1, "q": "2-3 inches above the wound, directly on the skin" },
-        { "id": 2, "q": "Over the uniform at the top of the limb" },
-        { "id": 3, "q": "Directly across the wound edges" },
-        { "id": 4, "q": "Below the wound, towards the hand or foot" }
+        "Directly across the wound edges",
+        "Below the wound, towards the hand or foot",
+        "2-3 inches above the wound, directly on the skin",
+        "Over the uniform at the top of the limb"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 30,
       "why": "In Tactical Field Care the tourniquet is applied to bare skin 2-3 inches above the bleeding site."
     },
@@ -48,12 +48,12 @@
       "stepId": "m",
       "question": "A properly applied tourniquet leaves the thigh still bleeding. What do you do?",
       "options": [
-        { "id": 1, "q": "Apply a second tourniquet side by side with the first" },
-        { "id": 2, "q": "Loosen the first and move it lower" },
-        { "id": 3, "q": "Pack the thigh wound with hemostatic gauze" },
-        { "id": 4, "q": "Raise the leg and wait two minutes" }
+        "Pack the thigh wound with hemostatic gauze",
+        "Raise the leg and wait two minutes",
+        "Apply a second tourniquet side by side with the first",
+        "Loosen the first and move it lower"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 45,
       "why": "A severe thigh bleed often needs a second tourniquet placed side by side with the first."
     },
@@ -62,12 +62,12 @@
       "stepId": "m",
       "question": "How long do you hold direct pressure after packing a wound with a hemostatic dressing?",
       "options": [
-        { "id": 1, "q": "3 minutes" },
-        { "id": 2, "q": "30 seconds" },
-        { "id": 3, "q": "1 minute" },
-        { "id": 4, "q": "10 minutes" }
+        "10 minutes",
+        "1 minute",
+        "30 seconds",
+        "3 minutes"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 30,
       "why": "A hemostatic dressing needs at least 3 full minutes of firm direct pressure to form a clot."
     },
@@ -76,12 +76,12 @@
       "stepId": "m",
       "question": "A deep groin wound is bleeding heavily and no tourniquet will seat there. What do you do?",
       "options": [
-        { "id": 1, "q": "Pack the wound and hold firm direct pressure" },
-        { "id": 2, "q": "Apply a tourniquet across the hip" },
-        { "id": 3, "q": "Cover the wound with a chest seal" },
-        { "id": 4, "q": "Raise both legs above the heart" }
+        "Raise both legs above the heart",
+        "Apply a tourniquet across the hip",
+        "Pack the wound and hold firm direct pressure",
+        "Cover the wound with a chest seal"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 45,
       "why": "Groin, armpit and neck wounds take no limb tourniquet, so they are packed with a hemostatic dressing and held under pressure."
     },
@@ -90,12 +90,12 @@
       "stepId": "m",
       "question": "By when should a tourniquet have stopped the bleeding?",
       "options": [
-        { "id": 1, "q": "Within 1 minute of starting" },
-        { "id": 2, "q": "Within 3 minutes of starting" },
-        { "id": 3, "q": "Within 5 minutes of starting" },
-        { "id": 4, "q": "Within 10 minutes of starting" }
+        "Within 1 minute of starting",
+        "Within 5 minutes of starting",
+        "Within 10 minutes of starting",
+        "Within 3 minutes of starting"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "The standard is bleeding stopped within 1 minute, with the tourniquet fully secured within 3 minutes."
     },
@@ -104,10 +104,10 @@
       "stepId": "m",
       "question": "In what order does the blood sweep run?",
       "options": [
-        { "id": 1, "q": "Neck, then each arm, then each leg" },
-        { "id": 2, "q": "Each leg, then each arm, then the neck" },
-        { "id": 3, "q": "Chest, then abdomen, then back" },
-        { "id": 4, "q": "Head, then chest, then pelvis" }
+        "Each leg, then each arm, then the neck",
+        "Neck, then each arm, then each leg",
+        "Head, then chest, then pelvis",
+        "Chest, then abdomen, then back"
       ],
       "correct": 1,
       "seconds": 30,
@@ -118,10 +118,10 @@
       "stepId": "a",
       "question": "Which manoeuvre opens the airway when you suspect a neck or spine injury?",
       "options": [
-        { "id": 1, "q": "Jaw-thrust" },
-        { "id": 2, "q": "Head-tilt/chin-lift" },
-        { "id": 3, "q": "Head tilt with the chin turned" },
-        { "id": 4, "q": "Chin-lift with the head rotated" }
+        "Head-tilt/chin-lift",
+        "Jaw-thrust",
+        "Chin-lift with the head rotated",
+        "Head tilt with the chin turned"
       ],
       "correct": 1,
       "seconds": 30,
@@ -132,12 +132,12 @@
       "stepId": "a",
       "question": "What does snoring from an unconscious casualty tell you?",
       "options": [
-        { "id": 1, "q": "The airway is partly obstructed" },
-        { "id": 2, "q": "The casualty is breathing normally" },
-        { "id": 3, "q": "The casualty is in shock" },
-        { "id": 4, "q": "The chest is sealed" }
+        "The casualty is breathing normally",
+        "The casualty is in shock",
+        "The chest is sealed",
+        "The airway is partly obstructed"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 30,
       "why": "Snoring or gurgling means air is passing a partial obstruction, so the airway needs opening."
     },
@@ -146,12 +146,12 @@
       "stepId": "a",
       "question": "An unconscious casualty is breathing and has no suspected spinal injury. How do you position him?",
       "options": [
-        { "id": 1, "q": "On his side in the recovery position" },
-        { "id": 2, "q": "Flat on his back with the head tilted" },
-        { "id": 3, "q": "Sitting upright against a wall" },
-        { "id": 4, "q": "Face down with the head turned" }
+        "On his side in the recovery position",
+        "Face down with the head turned",
+        "Sitting upright against a wall",
+        "Flat on his back with the head tilted"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 45,
       "why": "The recovery position keeps the tongue and fluid out of the airway in a casualty who cannot protect it himself."
     },
@@ -160,12 +160,12 @@
       "stepId": "a",
       "question": "What do you do about debris in a casualty's mouth?",
       "options": [
-        { "id": 1, "q": "Remove what you can see" },
-        { "id": 2, "q": "Sweep the mouth with a blind finger" },
-        { "id": 3, "q": "Flush the mouth with water" },
-        { "id": 4, "q": "Leave it and roll the casualty face down" }
+        "Sweep the mouth with a blind finger",
+        "Flush the mouth with water",
+        "Leave it and roll the casualty face down",
+        "Remove what you can see"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 30,
       "why": "Visible objects come out under direct vision; a blind finger sweep pushes debris deeper into the airway."
     },
@@ -174,12 +174,12 @@
       "stepId": "a",
       "question": "A conscious casualty with facial injuries is struggling to breathe. What position do you allow?",
       "options": [
-        { "id": 1, "q": "Sitting up and leaning forward" },
-        { "id": 2, "q": "Flat on the back" },
-        { "id": 3, "q": "On the side with the head down" },
-        { "id": 4, "q": "Face down on the stomach" }
+        "Sitting up and leaning forward",
+        "Flat on the back",
+        "On the side with the head down",
+        "Face down on the stomach"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 45,
       "why": "A conscious casualty takes whatever position protects his own airway, which with facial injuries is usually sitting up and forward."
     },
@@ -188,10 +188,10 @@
       "stepId": "r",
       "question": "Which sign points to a penetrating chest wound?",
       "options": [
-        { "id": 1, "q": "A sucking or hissing sound on breathing in" },
-        { "id": 2, "q": "A snoring sound on breathing out" },
-        { "id": 3, "q": "Bright red blood pooling at the groin" },
-        { "id": 4, "q": "Cool, clammy skin on the hands" }
+        "Cool, clammy skin on the hands",
+        "A sucking or hissing sound on breathing in",
+        "A snoring sound on breathing out",
+        "Bright red blood pooling at the groin"
       ],
       "correct": 1,
       "seconds": 30,
@@ -202,12 +202,12 @@
       "stepId": "r",
       "question": "You find an open chest wound in Tactical Field Care. What do you do?",
       "options": [
-        { "id": 1, "q": "Apply a vented chest seal over the wound" },
-        { "id": 2, "q": "Pack the wound with hemostatic gauze" },
-        { "id": 3, "q": "Apply a tourniquet above the wound" },
-        { "id": 4, "q": "Roll the casualty onto the injured side" }
+        "Roll the casualty onto the injured side",
+        "Apply a tourniquet above the wound",
+        "Apply a vented chest seal over the wound",
+        "Pack the wound with hemostatic gauze"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 45,
       "why": "Every open or sucking chest wound is covered with a vented chest seal, and chest wounds are never packed."
     },
@@ -216,10 +216,10 @@
       "stepId": "r",
       "question": "Which breathing rate counts as respiratory distress in an adult casualty?",
       "options": [
-        { "id": 1, "q": "Over 20 breaths a minute" },
-        { "id": 2, "q": "Over 14 breaths a minute" },
-        { "id": 3, "q": "Exactly 16 breaths a minute" },
-        { "id": 4, "q": "Exactly 12 breaths a minute" }
+        "Exactly 16 breaths a minute",
+        "Over 20 breaths a minute",
+        "Over 14 breaths a minute",
+        "Exactly 12 breaths a minute"
       ],
       "correct": 1,
       "seconds": 30,
@@ -230,12 +230,12 @@
       "stepId": "r",
       "question": "Why do you roll the casualty during the respiration check?",
       "options": [
-        { "id": 1, "q": "To find entry and exit wounds on the back" },
-        { "id": 2, "q": "To drain blood out of the chest" },
-        { "id": 3, "q": "To warm the casualty's back" },
-        { "id": 4, "q": "To free the arm for a tourniquet" }
+        "To free the arm for a tourniquet",
+        "To drain blood out of the chest",
+        "To find entry and exit wounds on the back",
+        "To warm the casualty's back"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 30,
       "why": "A penetrating wound often has an exit in the back, so the torso is checked front and back."
     },
@@ -244,12 +244,12 @@
       "stepId": "r",
       "question": "Breathing distress worsens after you seal a chest wound. What do you do?",
       "options": [
-        { "id": 1, "q": "Burp or remove the chest seal" },
-        { "id": 2, "q": "Apply a second seal over the first" },
-        { "id": 3, "q": "Pack the wound through the seal" },
-        { "id": 4, "q": "Lay the casualty flat and wait" }
+        "Lay the casualty flat and wait",
+        "Pack the wound through the seal",
+        "Apply a second seal over the first",
+        "Burp or remove the chest seal"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 45,
       "why": "Rising distress under a seal suggests a tension pneumothorax, and the first move is to burp or remove the seal."
     },
@@ -258,12 +258,12 @@
       "stepId": "c",
       "question": "Which set of signs points to shock?",
       "options": [
-        { "id": 1, "q": "Rapid breathing, pale clammy skin, confusion" },
-        { "id": 2, "q": "Slow pulse, flushed skin, calm speech" },
-        { "id": 3, "q": "Warm dry skin, strong pulse, clear speech" },
-        { "id": 4, "q": "Slow deep breathing, pink skin, full alertness" }
+        "Rapid breathing, pale clammy skin, confusion",
+        "Warm dry skin, strong pulse, clear speech",
+        "Slow pulse, flushed skin, calm speech",
+        "Slow deep breathing, pink skin, full alertness"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "Shock from blood loss shows as rapid breathing, pale, cool, clammy skin and a casualty losing focus."
     },
@@ -272,10 +272,10 @@
       "stepId": "c",
       "question": "A casualty with no head injury turns confused and his radial pulse fades. What is this?",
       "options": [
-        { "id": 1, "q": "Hemorrhagic shock" },
-        { "id": 2, "q": "Hypothermia" },
-        { "id": 3, "q": "Airway obstruction" },
-        { "id": 4, "q": "A fracture of the pelvis" }
+        "A fracture of the pelvis",
+        "Hemorrhagic shock",
+        "Airway obstruction",
+        "Hypothermia"
       ],
       "correct": 1,
       "seconds": 45,
@@ -286,12 +286,12 @@
       "stepId": "c",
       "question": "What do you check on the limb after tightening a tourniquet?",
       "options": [
-        { "id": 1, "q": "The pulse beyond the tourniquet" },
-        { "id": 2, "q": "The temperature of the opposite limb" },
-        { "id": 3, "q": "The capillary refill at the ear" },
-        { "id": 4, "q": "The grip strength of the hand" }
+        "The capillary refill at the ear",
+        "The grip strength of the hand",
+        "The temperature of the opposite limb",
+        "The pulse beyond the tourniquet"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 30,
       "why": "A tourniquet that has stopped arterial flow leaves no pulse beyond it; a pulse means it needs tightening."
     },
@@ -300,12 +300,12 @@
       "stepId": "c",
       "question": "A hasty tourniquet went on over the uniform 20 minutes ago. What do you do now in Tactical Field Care?",
       "options": [
-        { "id": 1, "q": "Expose the limb and reapply it to bare skin" },
-        { "id": 2, "q": "Loosen it to restore some circulation" },
-        { "id": 3, "q": "Cover it over and leave it untouched" },
-        { "id": 4, "q": "Remove it and pack the wound instead" }
+        "Cover it over and leave it untouched",
+        "Remove it and pack the wound instead",
+        "Expose the limb and reapply it to bare skin",
+        "Loosen it to restore some circulation"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 45,
       "why": "A tourniquet applied over clothing is replaced with one on bare skin 2-3 inches above the wound, and the time is marked."
     },
@@ -314,12 +314,12 @@
       "stepId": "c",
       "question": "Where do you record the time a tourniquet went on?",
       "options": [
-        { "id": 1, "q": "On the tourniquet strap and the casualty card" },
-        { "id": 2, "q": "On the casualty card only" },
-        { "id": 3, "q": "On the tourniquet strap only" },
-        { "id": 4, "q": "On the evacuation request only" }
+        "On the tourniquet strap only",
+        "On the evacuation request only",
+        "On the casualty card only",
+        "On the tourniquet strap and the casualty card"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 30,
       "why": "The time goes in permanent marker on the tourniquet itself and on the casualty card, so it travels with the casualty."
     },
@@ -328,12 +328,12 @@
       "stepId": "h",
       "question": "Bleeding is controlled. What is your first hypothermia step for a casualty on cold ground?",
       "options": [
-        { "id": 1, "q": "Put insulation between him and the ground" },
-        { "id": 2, "q": "Pour warm fluid over his clothing" },
-        { "id": 3, "q": "Strip his clothing to recheck for wounds" },
-        { "id": 4, "q": "Wait for the evacuation blanket to arrive" }
+        "Strip his clothing to recheck for wounds",
+        "Wait for the evacuation blanket to arrive",
+        "Pour warm fluid over his clothing",
+        "Put insulation between him and the ground"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 30,
       "why": "The ground drains heat fastest, so insulation underneath the casualty comes first."
     },
@@ -342,12 +342,12 @@
       "stepId": "h",
       "question": "Where does an active warming blanket go?",
       "options": [
-        { "id": 1, "q": "On the front of the chest and under the arms" },
-        { "id": 2, "q": "Directly on bare skin at the wound" },
-        { "id": 3, "q": "Wrapped around the head and neck" },
-        { "id": 4, "q": "Under the legs only" }
+        "Under the legs only",
+        "Directly on bare skin at the wound",
+        "On the front of the chest and under the arms",
+        "Wrapped around the head and neck"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 30,
       "why": "Active heat goes on the anterior torso and in the armpits, never directly on skin, which would burn the casualty."
     },
@@ -356,10 +356,10 @@
       "stepId": "h",
       "question": "It is a warm day and your casualty has lost a lot of blood. What do you do about heat loss?",
       "options": [
-        { "id": 1, "q": "Insulate and cover him as you would in the cold" },
-        { "id": 2, "q": "Leave him uncovered so he stays cool" },
-        { "id": 3, "q": "Cool him with water to prevent overheating" },
-        { "id": 4, "q": "Cover him only once he starts shivering" }
+        "Cool him with water to prevent overheating",
+        "Insulate and cover him as you would in the cold",
+        "Cover him only once he starts shivering",
+        "Leave him uncovered so he stays cool"
       ],
       "correct": 1,
       "seconds": 45,
@@ -370,12 +370,12 @@
       "stepId": "h",
       "question": "What do you do with wet clothing on a casualty?",
       "options": [
-        { "id": 1, "q": "Replace it with dry clothing" },
-        { "id": 2, "q": "Leave it in place to hold body heat" },
-        { "id": 3, "q": "Cut it away and leave the skin bare" },
-        { "id": 4, "q": "Wring it out and put it back on" }
+        "Cut it away and leave the skin bare",
+        "Wring it out and put it back on",
+        "Replace it with dry clothing",
+        "Leave it in place to hold body heat"
       ],
-      "correct": 1,
+      "correct": 2,
       "seconds": 30,
       "why": "Wet clothing pulls heat out of the casualty, so it is swapped for dry clothing and the casualty is covered again."
     },
@@ -384,12 +384,12 @@
       "stepId": "p",
       "question": "What do you record before giving an opioid or ketamine?",
       "options": [
-        { "id": 1, "q": "An AVPU mental status check" },
-        { "id": 2, "q": "The casualty's blood type" },
-        { "id": 3, "q": "The time of the last meal" },
-        { "id": 4, "q": "The air temperature at the scene" }
+        "An AVPU mental status check",
+        "The casualty's blood type",
+        "The air temperature at the scene",
+        "The time of the last meal"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "An AVPU mental status exam is documented first, so any later change can be read against a baseline."
     },
@@ -398,12 +398,12 @@
       "stepId": "p",
       "question": "A casualty in hemorrhagic shock is in severe pain. Which analgesic fits?",
       "options": [
-        { "id": 1, "q": "Ketamine" },
-        { "id": 2, "q": "Oral transmucosal fentanyl citrate" },
-        { "id": 3, "q": "Meloxicam" },
-        { "id": 4, "q": "Midazolam" }
+        "Midazolam",
+        "Meloxicam",
+        "Oral transmucosal fentanyl citrate",
+        "Ketamine"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 45,
       "why": "Ketamine is the choice in shock or respiratory distress, where opioids would push the blood pressure and breathing down further."
     },
@@ -412,12 +412,12 @@
       "stepId": "p",
       "question": "What do you do with the weapon of a casualty who has been given fentanyl or ketamine?",
       "options": [
-        { "id": 1, "q": "Take it away from him" },
-        { "id": 2, "q": "Leave it slung on him" },
-        { "id": 3, "q": "Unload it and hand it back" },
-        { "id": 4, "q": "Give it to him for reassurance" }
+        "Take it away from him",
+        "Leave it slung on him",
+        "Give it to him for reassurance",
+        "Unload it and hand it back"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "Casualties are disarmed after fentanyl, ketamine or midazolam, because the drug clouds judgement."
     },
@@ -426,12 +426,12 @@
       "stepId": "p",
       "question": "Which pair treats mild to moderate pain in a casualty still able to fight?",
       "options": [
-        { "id": 1, "q": "Acetaminophen and meloxicam" },
-        { "id": 2, "q": "Fentanyl and ketamine" },
-        { "id": 3, "q": "Morphine and ondansetron" },
-        { "id": 4, "q": "Ibuprofen and naloxone" }
+        "Fentanyl and ketamine",
+        "Ibuprofen and naloxone",
+        "Morphine and ondansetron",
+        "Acetaminophen and meloxicam"
       ],
-      "correct": 1,
+      "correct": 3,
       "seconds": 30,
       "why": "The Combat Wound Medication Pack holds acetaminophen 500 mg twice every 8 hours and meloxicam 15 mg once a day."
     },
@@ -440,12 +440,12 @@
       "stepId": "ab",
       "question": "Which casualties get antibiotics on the battlefield?",
       "options": [
-        { "id": 1, "q": "All casualties with open combat wounds" },
-        { "id": 2, "q": "Only casualties with abdominal wounds" },
-        { "id": 3, "q": "Only casualties with burns" },
-        { "id": 4, "q": "Only casualties in shock" }
+        "All casualties with open combat wounds",
+        "Only casualties with abdominal wounds",
+        "Only casualties with burns",
+        "Only casualties in shock"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "Antibiotics are recommended for every open combat wound, whatever it looks like."
     },
@@ -454,12 +454,12 @@
       "stepId": "ab",
       "question": "Your casualty is unconscious and cannot swallow. Which antibiotic do you give?",
       "options": [
-        { "id": 1, "q": "Ertapenem 1 g by IV, IO or IM route" },
-        { "id": 2, "q": "Moxifloxacin 400 mg by mouth" },
-        { "id": 3, "q": "Moxifloxacin 400 mg crushed under the tongue" },
-        { "id": 4, "q": "Ertapenem 1 g by mouth" }
+        "Ertapenem 1 g by IV, IO or IM route",
+        "Moxifloxacin 400 mg crushed under the tongue",
+        "Moxifloxacin 400 mg by mouth",
+        "Ertapenem 1 g by mouth"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 45,
       "why": "When the casualty cannot take tablets, the antibiotic is ertapenem 1 g once a day by IV, IO or IM route."
     },
@@ -468,12 +468,12 @@
       "stepId": "ab",
       "question": "Which antibiotic comes in the Combat Wound Medication Pack?",
       "options": [
-        { "id": 1, "q": "Moxifloxacin 400 mg" },
-        { "id": 2, "q": "Ertapenem 1 g" },
-        { "id": 3, "q": "Amoxicillin 500 mg" },
-        { "id": 4, "q": "Doxycycline 100 mg" }
+        "Moxifloxacin 400 mg",
+        "Ertapenem 1 g",
+        "Doxycycline 100 mg",
+        "Amoxicillin 500 mg"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "The pack the casualty carries holds moxifloxacin 400 mg, taken once a day by mouth."
     },
@@ -482,12 +482,12 @@
       "stepId": "w",
       "question": "How do you cover a penetrating eye injury?",
       "options": [
-        { "id": 1, "q": "A rigid shield taped over the injured eye" },
-        { "id": 2, "q": "A pressure patch taped over the injured eye" },
-        { "id": 3, "q": "A moist dressing laid over both eyes" },
-        { "id": 4, "q": "A bandage bound firmly across both eyes" }
+        "A rigid shield taped over the injured eye",
+        "A pressure patch taped over the injured eye",
+        "A moist dressing laid over both eyes",
+        "A bandage bound firmly across both eyes"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "A rigid shield over the injured eye alone protects the globe without pressing on it."
     },
@@ -496,12 +496,12 @@
       "stepId": "w",
       "question": "Which dressing goes on a partial-thickness burn?",
       "options": [
-        { "id": 1, "q": "A dry sterile dressing" },
-        { "id": 2, "q": "A wet sterile dressing" },
-        { "id": 3, "q": "A hemostatic dressing" },
-        { "id": 4, "q": "An occlusive chest seal" }
+        "A dry sterile dressing",
+        "A wet sterile dressing",
+        "An occlusive chest seal",
+        "A hemostatic dressing"
       ],
-      "correct": 1,
+      "correct": 0,
       "seconds": 30,
       "why": "Burns are covered with dry sterile dressings, because wet dressings strip heat and drive hypothermia."
     },
@@ -510,10 +510,10 @@
       "stepId": "w",
       "question": "A fragment is lodged in the thigh and the wound is bleeding around it. What do you do?",
       "options": [
-        { "id": 1, "q": "Bandage around the object and leave it in place" },
-        { "id": 2, "q": "Pull the object out and pack the track" },
-        { "id": 3, "q": "Push the object deeper to plug the wound" },
-        { "id": 4, "q": "Cut the object off flush with the skin" }
+        "Cut the object off flush with the skin",
+        "Bandage around the object and leave it in place",
+        "Pull the object out and pack the track",
+        "Push the object deeper to plug the wound"
       ],
       "correct": 1,
       "seconds": 45,
@@ -524,10 +524,10 @@
       "stepId": "w",
       "question": "What do you do with exposed bowel in an abdominal wound?",
       "options": [
-        { "id": 1, "q": "Cover it with a moist sterile dressing" },
-        { "id": 2, "q": "Pack it with hemostatic gauze" },
-        { "id": 3, "q": "Force it back inside the abdomen" },
-        { "id": 4, "q": "Leave it open to the air" }
+        "Force it back inside the abdomen",
+        "Cover it with a moist sterile dressing",
+        "Pack it with hemostatic gauze",
+        "Leave it open to the air"
       ],
       "correct": 1,
       "seconds": 30,
@@ -538,10 +538,10 @@
       "stepId": "s",
       "question": "What does a splint have to immobilise?",
       "options": [
-        { "id": 1, "q": "The joint above and the joint below the fracture" },
-        { "id": 2, "q": "The fracture site alone" },
-        { "id": 3, "q": "The whole limb from shoulder to hand" },
-        { "id": 4, "q": "The nearest joint only" }
+        "The nearest joint only",
+        "The joint above and the joint below the fracture",
+        "The fracture site alone",
+        "The whole limb from shoulder to hand"
       ],
       "correct": 1,
       "seconds": 30,
@@ -552,10 +552,10 @@
       "stepId": "s",
       "question": "The fingers beyond a new splint are cool, blue and numb. What do you do?",
       "options": [
-        { "id": 1, "q": "Loosen the wrap and secure it again" },
-        { "id": 2, "q": "Tighten the wrap to control swelling" },
-        { "id": 3, "q": "Take the splint off and move the limb" },
-        { "id": 4, "q": "Raise the arm and leave the wrap alone" }
+        "Tighten the wrap to control swelling",
+        "Loosen the wrap and secure it again",
+        "Take the splint off and move the limb",
+        "Raise the arm and leave the wrap alone"
       ],
       "correct": 1,
       "seconds": 45,
