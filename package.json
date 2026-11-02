@@ -11,11 +11,9 @@
     "tokens": "node scripts/tokens-to-css.mjs"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.0.0",
-    "tailwindcss": "^4.3.3"
+    "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",
