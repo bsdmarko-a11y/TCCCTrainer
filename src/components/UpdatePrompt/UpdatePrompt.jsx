@@ -33,7 +33,10 @@ export default function UpdatePrompt() {
   // Dok sat radi, ponuda se ne prikazuje; provjerava se povremeno.
   useEffect(() => {
     if (!needRefresh) return undefined;
-    const interval = window.setInterval(() => setBusy(tourniquetRunning()), 5000);
+    const interval = window.setInterval(
+      () => setBusy(tourniquetRunning()),
+      5000,
+    );
     return () => window.clearInterval(interval);
   }, [needRefresh]);
 
