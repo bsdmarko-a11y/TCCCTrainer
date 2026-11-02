@@ -47,12 +47,39 @@ https://claude.ai/artifact/GeVYoRgijTHKAfJMQeV5SA
 ## Redoslijed izrade
 
 1. ~~Postavljanje projekta i struktura mapa~~
-2. Rute i donja navigacija
-3. Kviz
-4. MARCH-PAWS vodic
-5. Mjerac vremena za poveze (TQ)
-6. Scenariji
-7. Kartica unesrecenog
-8. Napredak
-9. PWA i rad bez mreze
+2. ~~Rute i donja navigacija~~
+3. ~~Kviz~~
+4. ~~MARCH-PAWS vodic~~
+5. ~~Mjerac vremena za poveze (TQ)~~
+6. ~~Scenariji~~
+7. ~~Kartica unesrecenog~~
+8. ~~Napredak~~
+9. ~~PWA i rad bez mreze~~
 10. Objava (Netlify ili Vercel)
+
+## Objava
+
+Aplikacija je u mapi `iqarus/` unutar repozitorija, pa objavi treba reci gdje
+je korijen projekta.
+
+**Netlify** - New site from Git, odaberi `bsdmarko-a11y/IQARUS`, pa u
+postavkama **Base directory = `iqarus`**. Ostalo (naredba, izlazna mapa,
+zamjena putanja, zaglavlja) cita se iz `netlify.toml`.
+
+**Vercel** - Add New Project, isti repozitorij, **Root Directory = `iqarus`**.
+Ostalo je u `vercel.json`.
+
+Obje postavke rade istu bitnu stvar: svaka putanja se poslužuje kao
+`index.html`. Bez toga osvjezavanje na `/kartica/123/ispis` vraca 404, jer ta
+datoteka na posluzitelju ne postoji - rutu zna samo React Router.
+
+`sw.js` se salje s `Cache-Control: no-cache`, inace bi preglednik drzao staru
+verziju radnika i nova objava nikad ne bi stigla do uredjaja.
+
+### Provjera nakon prve objave
+
+PWA treba HTTPS, sto obje usluge daju. Na pravoj adresi provjeri:
+
+1. DevTools, Application, Service Workers - radnik je `activated`.
+2. Network, ukljuci **Offline**, pa osvjezi - aplikacija se i dalje ucitava.
+3. Na telefonu: Add to Home Screen, pa pokreni u zrakoplovnom nacinu.
