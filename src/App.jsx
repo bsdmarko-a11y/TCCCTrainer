@@ -13,6 +13,7 @@ import {
 import BottomNav from "./components/BottomNav/BottomNav.jsx";
 import ProgressBar from "./components/ProgressBar/ProgressBar.jsx";
 import ScreenHeader from "./components/ScreenHeader/ScreenHeader.jsx";
+import UpdatePrompt from "./components/UpdatePrompt/UpdatePrompt.jsx";
 import Timer from "./components/Timer/Timer.jsx";
 import casualtyCard from "./data/casualty-card.json";
 import march from "./data/march.json";
@@ -154,6 +155,7 @@ function AppShell() {
       </main>
 
       {!isPrintRoute && <BottomNav />}
+      {!isPrintRoute && <UpdatePrompt />}
     </div>
   );
 }
