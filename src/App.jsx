@@ -27,6 +27,7 @@ import {
   scenarioPick,
   toneForPercent,
 } from "./lib/scoring.js";
+import { printCard } from "./lib/print.js";
 import stil from "./App.module.css";
 
 const STORAGE_ERROR =
@@ -1465,15 +1466,19 @@ function CardPrintScreen() {
       <div className={`${stil.buttonRow} ${stil.noPrint}`}>
         <button
           className={stil.button}
-          onClick={() => window.print()}
+          onClick={() => printCard(card.trainingId)}
           type="button"
         >
-          Print
+          Print or save as PDF
         </button>
         <Link className={stil.secondaryButton} to={RouteNames.CARD}>
           Back to cards
         </Link>
       </div>
+      <p className={`small ${stil.noPrint} ${stil.muted}`}>
+        Choose <strong>Save as PDF</strong> as the destination to keep a copy.
+        It prints on A4, front page then back page.
+      </p>
 
       {/* ---------------- prednja strana ---------------- */}
       <section className={stil.ddCard}>
@@ -1591,18 +1596,35 @@ function CardPrintScreen() {
                   ))}
                 </tr>
               ))}
+              {/* AVPU i bol su redovi kao i ostali, po jedna celija za svaki
+                  trenutak mjerenja. Kartica biljezi jedan AVPU, pa ide u prvi
+                  stupac, a ostali ostaju prazni za rukopis. */}
               <tr>
                 <th scope="row">AVPU</th>
                 <td>{card.avpu ? card.avpu.split(" ")[0] : ""}</td>
-                <td>{card.avpuTime}</td>
-                <td colSpan={2}>
-                  {card.gcsScore
-                    ? `GCS ${card.gcsScore} at ${card.gcsTime || "—"}`
-                    : ""}
-                </td>
+                <td />
+                <td />
+                <td />
+              </tr>
+              <tr>
+                <th scope="row">Pain scale (0-10)</th>
+                <td />
+                <td />
+                <td />
+                <td />
               </tr>
             </tbody>
           </table>
+          <div className={stil.ddBand}>
+            <Slot label="AVPU time" value={card.avpuTime} />
+            <Slot label="GCS" value={card.gcsScore} />
+            <Slot label="GCS time" value={card.gcsTime} />
+            <Slot
+              grow
+              label="Pupils equal and reactive"
+              value={card.pupilsEqualReactive ? "Yes" : ""}
+            />
+          </div>
         </div>
       </section>
 
