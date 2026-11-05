@@ -41,8 +41,6 @@ jednom, atributom na `<html data-theme="...">`:
 - `night` - crvena, za disciplinu svjetla
 - `print` - bijela podloga, samo za ispis kartice
 
-Dizajnerski sustav s pravilima i komponentama:
-https://claude.ai/artifact/GeVYoRgijTHKAfJMQeV5SA
 
 ## Redoslijed izrade
 
