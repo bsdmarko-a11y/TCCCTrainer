@@ -1,0 +1,18 @@
+# Jednostranicna aplikacija: svaka putanja koja nije stvarna datoteka ide na
+# index.html, inace osvjezavanje na /kartica/123/ispis vraca 404.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Servisni radnik se ne smije predmemorirati, inace nova verzija ne stigne
+# do uredjaja.
+<IfModule mod_headers.c>
+  <Files "sw.js">
+    Header set Cache-Control "no-cache"
+  </Files>
+</IfModule>

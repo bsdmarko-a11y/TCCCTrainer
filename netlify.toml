@@ -1,5 +1,4 @@
-# Aplikacija zivi u iqarus/ unutar repozitorija, pa se u postavkama stranice
-# postavi Base directory = iqarus. Putanje ispod su relativne na nju.
+# Postavke za objavu na Netlifyju. Aplikacija je u korijenu repozitorija.
 [build]
   command = "npm run build"
   publish = "dist"
