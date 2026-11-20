@@ -1,0 +1,19 @@
+# Aplikacija zivi u iqarus/ unutar repozitorija, pa se u postavkama stranice
+# postavi Base directory = iqarus. Putanje ispod su relativne na nju.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Jednostranicna aplikacija: svaka putanja ide na index.html, inace bi
+# osvjezavanje na /kartica/123/ispis vratilo 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Servisni radnik se ne smije predmemorirati, inace nova verzija nikad ne
+# stigne do uredjaja.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

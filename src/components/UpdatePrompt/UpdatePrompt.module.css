@@ -1,0 +1,53 @@
+/* Lebdi iznad donje navigacije, ali je ne prekriva. */
+.ponuda {
+  position: fixed;
+  right: var(--space-4);
+  bottom: calc(var(--nav-h) + var(--space-4) + env(safe-area-inset-bottom, 0px));
+  left: var(--space-4);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-100);
+  border-radius: var(--radius-lg);
+  background: var(--surface-200);
+  box-shadow: var(--shadow-sheet);
+}
+
+.tekst {
+  margin: 0;
+  color: var(--ink-100);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.gumbi {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.osvjezi,
+.kasnije {
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.osvjezi {
+  background: var(--brand-500);
+  color: var(--ink-on-brand);
+}
+
+.kasnije {
+  border-color: var(--border-100);
+  background: var(--surface-300);
+  color: var(--ink-100);
+}
