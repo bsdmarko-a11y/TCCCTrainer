@@ -1,0 +1,31 @@
+{
+  "cards": [
+    {
+      "id": "1001",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "trainingId": "LANE 3 / MANIKIN B",
+      "casualtyNumber": "1 of 2",
+      "date": "2026-11-20",
+      "timeOfWounding": "09:15",
+      "sex": "Male",
+      "triageCategory": "",
+      "medevacPriority": "P1",
+      "mechanism": ["GSW"],
+      "injuriesFound": [],
+      "injurySites": "Left thigh",
+      "vitals": [],
+      "tourniquets": [
+        {
+          "site": "Left leg",
+          "timeApplied": "09:16",
+          "timeReapplied": "",
+          "timeRemoved": "",
+          "note": "CAT, high and tight"
+        }
+      ],
+      "drugs": [],
+      "notes": "Sample training card served by json-server.",
+      "lane": "Lane 3"
+    }
+  ]
+}
