@@ -19,6 +19,8 @@ Završni rad programa Front-End developer (Edunova).
 | Scenariji | `/scenario`, `/scenario/:scenarioId` | Odabir postupaka pravim redoslijedom, s bodovanjem |
 | Mjerač poveza | `/tq` | Vrijeme od postavljanja poveza, upozorenje nakon 60 s |
 | Kartice | `/kartica`, `/kartica/nova`, `/kartica/:cardId`, `/kartica/:cardId/ispis` | Unos, izmjena, brisanje i ispis kartice unesrećenog (DD1380) |
+| Vježbe | `/vjezbe`, `/vjezbe/nova`, `/vjezbe/:vjezbaId` | Unos, izmjena i brisanje vježbi, odabir polaznika, popis kartica vježbe |
+| Polaznici | `/polaznici`, `/polaznici/novi`, `/polaznici/:polaznikId` | Unos, izmjena i brisanje polaznika, popis njegovih vježbi |
 | Napredak | `/napredak` | Spremljeni rezultati kviza i scenarija |
 
 ## Tehnologije
@@ -53,7 +55,8 @@ npm run tokens     # design/tokens.json -> src/styles/variables.css
 ## Struktura
 
 ```
-db.json                 podaci za json-server (zbirka cards)
+db.json                 podaci za json-server (cards, vjezbe, polaznici,
+                        vjezbaPolaznik)
 .env.api                postavke načina rada "api"
 design/tokens.json      izvor istine za boje, tipografiju, razmake
 scripts/                generator CSS varijabli iz tokena
@@ -63,25 +66,31 @@ src/
   pages/                po jedan zaslon (logika zaslona)
   components/           prezentacijske komponente za višekratnu upotrebu
                         (BottomNav, Panel, ProgressBar, ScreenHeader, Timer,
-                        Loading, StorageWarning, UpdatePrompt, icons)
-  hooks/                useCards (dohvat kartica), useLocalStorage, useSwipe
+                        Loading, FormField, CheckboxGroup, StorageWarning,
+                        UpdatePrompt, icons)
+  hooks/                useLoad, useCards, useVjezbe, usePolaznici (dohvat
+                        podataka), useLocalStorage, useSwipe
   services/             pristup podacima (vidi niže)
   data/                 sadržaj: march, questions, scenarios, casualty-card
-  lib/                  constants (putanje, ključevi), scoring, formatTime,
-                        alerts, print
+  lib/                  constants (putanje, ključevi), validation, scoring,
+                        formatTime, alerts, print
   styles/               variables.css (generirano), global.css, screens.module.css
 ```
 
 ## Podaci i servisni sloj
 
-Zasloni ne znaju odakle podaci dolaze. Kartice unesrećenog idu ovim putem:
+Zasloni ne znaju odakle podaci dolaze. Kartice, vježbe i polaznici idu istim
+putem:
 
 ```
-zaslon (pages/CasualtyCard)
-  -> hook useCards / useCard     dohvat u useEffect, stanje učitavanja i greške
-    -> services/cardService.js   getAll, getById, create, update, remove, save
-      -> cardService.local.js    localStorage (preko services/storage.js)
-      -> cardService.api.js      json-server (preko services/http.js, fetch)
+zaslon (pages/...)
+  -> hook (useCards, useVjezbe, usePolaznici)   dohvat u useEffect, stanje
+                                                učitavanja i greške
+    -> servis entiteta (cardService, vjezbaService, polaznikService,
+       vjezbaPolaznikService)
+      -> services/collection.js                 bira izvor zbirke
+        -> collection.local.js                  localStorage (storage.js)
+        -> collection.api.js                    json-server (http.js, fetch)
 ```
 
 Izvor se bira varijablom okoline `VITE_DATA_SOURCE`:
@@ -96,6 +105,27 @@ svodi na promjenu jedne datoteke.
 
 json-server mijenja `db.json` dok radi. Te promjene su podaci za vježbu i ne
 treba ih commitati.
+
+### Model podataka
+
+```
+vjezbe          { id, naziv, datum, lokacija, napomena }
+polaznici       { id, pozivniZnak, uloga }
+vjezbaPolaznik  { id, vjezbaId, polaznikId }
+cards           { id, vjezbaId, trainingId, ... }
+```
+
+- **Vježba 1:n kartice.** Kartica sprema `vjezbaId`; u formi kartice vježba se
+  bira iz izbornika. Zaslon vježbe prikazuje njezine kartice.
+- **Vježba n:n polaznici.** Parove drži vezna zbirka `vjezbaPolaznik`. U formi
+  vježbe polaznici se biraju kvačicama, a zaslon polaznika prikazuje vježbe u
+  kojima sudjeluje.
+- Vježba koja ima kartice ne može se obrisati. Brisanjem vježbe ili polaznika
+  brišu se i njihovi parovi u veznoj zbirci.
+- Polaznik se vodi pod pozivnim znakom; pravo ime se nigdje ne sprema.
+
+Forme vježbe i polaznika provjeravaju svako polje (`lib/validation.js`) i
+poruku prikazuju uz polje, nakon napuštanja polja ili pokušaja spremanja.
 
 Rezultati kviza i scenarija, tema i mjerač poveza spremaju se u localStorage
 preko hooka `useLocalStorage`.
@@ -146,7 +176,7 @@ verziju servisnog radnika i nova objava ne stigne do uređaja.
 
 ## Što još nije napravljeno
 
-- Veze 1:n i n:n između samostalnih entiteta (vježba, polaznik, kartica).
-- Validacija svakog polja s porukama i provjerom na `onBlur`.
+- Validacija svakog polja na kartici unesrećenog (forme vježbe i polaznika
+  je već imaju).
 - SCSS s varijablama i mixinima umjesto običnih CSS modula.
 - Poruke uspjeha (toast) i vlastiti dijalog potvrde brisanja.
