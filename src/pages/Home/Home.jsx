@@ -48,6 +48,16 @@ export function HomeScreen() {
           to={RouteNames.CARD}
         />
         <ModeLink
+          description="Group casualty cards and trainees by exercise"
+          title="Exercises"
+          to={RouteNames.VJEZBE}
+        />
+        <ModeLink
+          description="Call signs and roles, never real names"
+          title="Trainees"
+          to={RouteNames.POLAZNICI}
+        />
+        <ModeLink
           description="Review locally saved practice results"
           title="Progress"
           to={RouteNames.PROGRESS}

@@ -998,3 +998,13 @@
   gap: var(--space-3);
   margin-top: var(--space-7);
 }
+
+/* Poruka pogreske uz polje forme, i rub polja koje nije valjano. Boja nije
+   jedini znak: uz nju uvijek stoji tekst poruke. */
+.fieldError {
+  color: var(--signal-critical);
+}
+
+.fieldGroup [aria-invalid="true"] {
+  border-color: var(--signal-critical);
+}

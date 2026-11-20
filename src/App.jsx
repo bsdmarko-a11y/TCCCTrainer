@@ -17,6 +17,10 @@ import {
   CardListScreen,
   CardPrintScreen,
 } from "./pages/CasualtyCard/CasualtyCard.jsx";
+import {
+  ExerciseEditorScreen,
+  ExerciseListScreen,
+} from "./pages/Exercises/Exercises.jsx";
 import { HomeScreen } from "./pages/Home/Home.jsx";
 import { MarchScreen } from "./pages/MarchGuide/MarchGuide.jsx";
 import { NotFoundScreen } from "./pages/NotFound/NotFound.jsx";
@@ -27,6 +31,10 @@ import {
   ScenarioRunScreen,
 } from "./pages/Scenario/Scenario.jsx";
 import { TourniquetTimerScreen } from "./pages/TQTimer/TQTimer.jsx";
+import {
+  TraineeEditorScreen,
+  TraineeListScreen,
+} from "./pages/Trainees/Trainees.jsx";
 import stil from "./styles/screens.module.css";
 
 function App() {
@@ -108,6 +116,24 @@ function AppShell() {
             element={<CardEditorScreen key={location.pathname} />}
           />
           <Route path={RouteNames.PROGRESS} element={<ProgressScreen />} />
+          <Route path={RouteNames.VJEZBE} element={<ExerciseListScreen />} />
+          <Route
+            path={RouteNames.VJEZBA_NEW}
+            element={<ExerciseEditorScreen key={location.pathname} />}
+          />
+          <Route
+            path={RouteNames.VJEZBA_ONE}
+            element={<ExerciseEditorScreen key={location.pathname} />}
+          />
+          <Route path={RouteNames.POLAZNICI} element={<TraineeListScreen />} />
+          <Route
+            path={RouteNames.POLAZNIK_NEW}
+            element={<TraineeEditorScreen key={location.pathname} />}
+          />
+          <Route
+            path={RouteNames.POLAZNIK_ONE}
+            element={<TraineeEditorScreen key={location.pathname} />}
+          />
           <Route path="*" element={<NotFoundScreen />} />
         </Routes>
       </main>
