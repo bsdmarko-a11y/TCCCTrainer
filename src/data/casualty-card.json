@@ -297,10 +297,10 @@
       "helper": "Call sign or student number. No real names on a training card."
     },
     {
-      "name": "lane",
-      "label": "Lane or location",
-      "type": "text",
-      "helper": "Where the training serial ran."
+      "name": "vjezbaId",
+      "label": "Exercise",
+      "type": "exercise",
+      "helper": "The exercise this card belongs to. Exercises are managed on the Exercises screen."
     }
   ]
 }

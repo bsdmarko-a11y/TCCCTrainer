@@ -1,3 +1,4 @@
+import FormField from "../../components/FormField/FormField.jsx";
 import Loading from "../../components/Loading/Loading.jsx";
 import Panel from "../../components/Panel/Panel.jsx";
 import ScreenHeader from "../../components/ScreenHeader/ScreenHeader.jsx";
@@ -5,7 +6,14 @@ import StorageWarning from "../../components/StorageWarning/StorageWarning.jsx";
 import casualtyCard from "../../data/casualty-card.json";
 import stil from "../../styles/screens.module.css";
 import { useCard, useCards } from "../../hooks/useCards.js";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { useVjezbaOptions } from "../../hooks/useVjezbe.js";
+import {
+  Link,
+  Navigate,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { RouteNames } from "../../lib/constants.js";
 import { printCard } from "../../lib/print.js";
 import { useState } from "react";
@@ -25,9 +33,20 @@ function makeEmptyCard() {
   );
 }
 
+// Naziv vjezbe kojoj kartica pripada. Starije kartice imaju samo slobodan
+// tekst u polju "lane", pa se on prikazuje dok im se ne odabere vjezba.
+function exerciseLabel(card, vjezbe) {
+  const vjezba = vjezbe.find((item) => item.id === card.vjezbaId);
+  if (!vjezba) return card.lane || "";
+  return vjezba.lokacija
+    ? `${vjezba.naziv} / ${vjezba.lokacija}`
+    : vjezba.naziv;
+}
+
 export function CardListScreen() {
   // Podaci stizu iz servisa pri ucitavanju zaslona (useEffect u useCards).
   const { cards, loading, error, removeCard } = useCards();
+  const { vjezbe } = useVjezbaOptions();
 
   function confirmRemove(id) {
     if (!window.confirm("Delete this training card?")) return;
@@ -45,6 +64,14 @@ export function CardListScreen() {
           New card
         </Link>
       </ScreenHeader>
+      <div className={stil.buttonRow}>
+        <Link className={stil.secondaryButton} to={RouteNames.VJEZBE}>
+          Exercises
+        </Link>
+        <Link className={stil.secondaryButton} to={RouteNames.POLAZNICI}>
+          Trainees
+        </Link>
+      </div>
       {error && <StorageWarning message={error} />}
       <Panel title="Blank card">
         <p className="small">
@@ -82,6 +109,9 @@ export function CardListScreen() {
                   {card.date || "No date"} •{" "}
                   {card.casualtyNumber || "No number"}
                 </span>
+                <span className="small">
+                  {exerciseLabel(card, vjezbe) || "No exercise"}
+                </span>
               </Link>
               <button
                 aria-label={`Delete ${card.trainingId || "training card"}`}
@@ -103,7 +133,13 @@ export function CardEditorScreen() {
   const { cardId } = useParams();
   const navigate = useNavigate();
   const { card: existing, loading, error: loadError, save } = useCard(cardId);
-  const [emptyCard] = useState(makeEmptyCard);
+  const [searchParams] = useSearchParams();
+  const { vjezbe } = useVjezbaOptions();
+  // Nova kartica otvorena sa zaslona vjezbe (?vjezba=id) vec ima tu vjezbu.
+  const [emptyCard] = useState(() => ({
+    ...makeEmptyCard(),
+    vjezbaId: searchParams.get("vjezba") ?? "",
+  }));
   // Izmjene korisnika. Dok nista nije upisano, forma prikazuje dohvacenu
   // karticu (ili praznu), pa je ne treba prepisivati u stanje kad stigne.
   const [draft, setDraft] = useState(null);
@@ -165,19 +201,51 @@ export function CardEditorScreen() {
         <StorageWarning message={loadError || saveError} />
       )}
       <form className={stil.cardForm} onSubmit={saveCard}>
-        {casualtyCard.fields.map((field) => (
-          <CardField
-            field={field}
-            key={field.name}
-            onChange={(value) =>
-              setDraft((current) => ({
-                ...(current ?? form),
-                [field.name]: value,
-              }))
-            }
-            value={form[field.name]}
-          />
-        ))}
+        {casualtyCard.fields.map((field) => {
+          const onChange = (value) =>
+            setDraft((current) => ({
+              ...(current ?? form),
+              [field.name]: value,
+            }));
+
+          // Vjezba se bira s popisa postojecih vjezbi: kartica sprema njezin
+          // id, a ne slobodan tekst (veza vjezba 1:n kartice).
+          if (field.type === "exercise") {
+            return (
+              <FormField
+                helper={
+                  vjezbe.length === 0
+                    ? "No exercises yet. Create one on the Exercises screen."
+                    : field.helper
+                }
+                id={field.name}
+                key={field.name}
+                label={field.label}
+                onChange={onChange}
+                options={[
+                  { value: "", label: "No exercise" },
+                  ...vjezbe.map((vjezba) => ({
+                    value: vjezba.id,
+                    label: vjezba.datum
+                      ? `${vjezba.naziv} (${vjezba.datum})`
+                      : vjezba.naziv,
+                  })),
+                ]}
+                type="select"
+                value={form[field.name]}
+              />
+            );
+          }
+
+          return (
+            <CardField
+              field={field}
+              key={field.name}
+              onChange={onChange}
+              value={form[field.name]}
+            />
+          );
+        })}
         {formError && (
           <p className={stil.warning} role="alert">
             {formError}
@@ -425,6 +493,7 @@ export function CardPrintScreen() {
   const { card: saved, loading } = useCard(
     cardId === "prazna" ? undefined : cardId,
   );
+  const { vjezbe, loading: loadingVjezbe } = useVjezbaOptions();
   // Kartica se ispisuje i bez podataka: prazne crte se popunjavaju rukom,
   // kao na papirnatom obrascu. Nepostojeci cardId daje praznu karticu.
   const card = saved ?? {};
@@ -439,7 +508,7 @@ export function CardPrintScreen() {
       (row.category || "").toLowerCase().startsWith(category),
     );
 
-  if (loading) {
+  if (loading || loadingVjezbe) {
     return (
       <div className={stil.screen}>
         <Loading label="Loading card…" />
@@ -508,7 +577,7 @@ export function CardPrintScreen() {
         </div>
 
         <div className={stil.ddBand}>
-          <Slot label="Unit / lane" value={card.lane} />
+          <Slot label="Unit / lane" value={exerciseLabel(card, vjezbe)} />
           <Slot grow label="Allergies" value={card.allergies} />
           <Slot label="Blood type" value={card.bloodType} />
         </div>
