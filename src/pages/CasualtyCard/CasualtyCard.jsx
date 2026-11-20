@@ -1,11 +1,12 @@
+import Loading from "../../components/Loading/Loading.jsx";
 import Panel from "../../components/Panel/Panel.jsx";
 import ScreenHeader from "../../components/ScreenHeader/ScreenHeader.jsx";
 import StorageWarning from "../../components/StorageWarning/StorageWarning.jsx";
 import casualtyCard from "../../data/casualty-card.json";
 import stil from "../../styles/screens.module.css";
-import useStoredState from "../../hooks/useLocalStorage.js";
+import { useCard, useCards } from "../../hooks/useCards.js";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { RouteNames, STORAGE_KEYS } from "../../lib/constants.js";
+import { RouteNames } from "../../lib/constants.js";
 import { printCard } from "../../lib/print.js";
 import { useState } from "react";
 
@@ -25,14 +26,12 @@ function makeEmptyCard() {
 }
 
 export function CardListScreen() {
-  const [cards, setCards, storageError] = useStoredState(
-    STORAGE_KEYS.CARDS,
-    [],
-  );
+  // Podaci stizu iz servisa pri ucitavanju zaslona (useEffect u useCards).
+  const { cards, loading, error, removeCard } = useCards();
 
-  function removeCard(id) {
-    if (!window.confirm("Delete this training card from this browser?")) return;
-    setCards((savedCards) => savedCards.filter((card) => card.id !== id));
+  function confirmRemove(id) {
+    if (!window.confirm("Delete this training card?")) return;
+    removeCard(id);
   }
 
   return (
@@ -46,7 +45,7 @@ export function CardListScreen() {
           New card
         </Link>
       </ScreenHeader>
-      {storageError && <StorageWarning message={storageError} />}
+      {error && <StorageWarning message={error} />}
       <Panel title="Blank card">
         <p className="small">
           Print an empty DD1380 to fill in by hand on the lane.
@@ -58,7 +57,9 @@ export function CardListScreen() {
           Print a blank card
         </Link>
       </Panel>
-      {cards.length === 0 ? (
+      {loading ? (
+        <Loading label="Loading cards…" />
+      ) : error && cards.length === 0 ? null : cards.length === 0 ? (
         <Panel title="No saved cards">
           <p className="small">
             Create a training card for a practice scenario. No card data is
@@ -85,7 +86,7 @@ export function CardListScreen() {
               <button
                 aria-label={`Delete ${card.trainingId || "training card"}`}
                 className={stil.iconButton}
-                onClick={() => removeCard(card.id)}
+                onClick={() => confirmRemove(card.id)}
                 type="button"
               >
                 Delete
@@ -101,36 +102,47 @@ export function CardListScreen() {
 export function CardEditorScreen() {
   const { cardId } = useParams();
   const navigate = useNavigate();
-  const [cards, setCards, storageError] = useStoredState(
-    STORAGE_KEYS.CARDS,
-    [],
-  );
-  const existing = cards.find((card) => card.id === cardId);
-  const [form, setForm] = useState(() => existing || makeEmptyCard());
+  const { card: existing, loading, error: loadError, save } = useCard(cardId);
+  const [emptyCard] = useState(makeEmptyCard);
+  // Izmjene korisnika. Dok nista nije upisano, forma prikazuje dohvacenu
+  // karticu (ili praznu), pa je ne treba prepisivati u stanje kad stigne.
+  const [draft, setDraft] = useState(null);
   const [formError, setFormError] = useState("");
+  const [saveError, setSaveError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const form = draft ?? existing ?? emptyCard;
 
-  if (cardId && !existing && !storageError) {
+  if (loading) {
+    return (
+      <div className={stil.screen}>
+        <ScreenHeader eyebrow="Training record" title="Casualty card" />
+        <Loading label="Loading card…" />
+      </div>
+    );
+  }
+
+  if (cardId && !existing && !loadError) {
     return <Navigate replace to={RouteNames.CARD} />;
   }
 
-  function saveCard(event) {
+  async function saveCard(event) {
     event.preventDefault();
     if (!form.trainingId.trim()) {
       setFormError("Enter a training ID, such as LANE 3 / MANIKIN B.");
       return;
     }
 
-    const savedCard = {
-      ...form,
-      id: existing?.id || Date.now().toString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setCards((savedCards) =>
-      existing
-        ? savedCards.map((card) => (card.id === existing.id ? savedCard : card))
-        : [savedCard, ...savedCards],
-    );
-    navigate(RouteNames.CARD_ONE.replace(":cardId", savedCard.id));
+    setFormError("");
+    setSaveError("");
+    setSaving(true);
+    try {
+      const savedCard = await save(form);
+      navigate(RouteNames.CARD_ONE.replace(":cardId", savedCard.id));
+    } catch (error) {
+      setSaveError(error.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -149,14 +161,19 @@ export function CardEditorScreen() {
           </Link>
         )}
       </ScreenHeader>
-      {storageError && <StorageWarning message={storageError} />}
+      {(loadError || saveError) && (
+        <StorageWarning message={loadError || saveError} />
+      )}
       <form className={stil.cardForm} onSubmit={saveCard}>
         {casualtyCard.fields.map((field) => (
           <CardField
             field={field}
             key={field.name}
             onChange={(value) =>
-              setForm((current) => ({ ...current, [field.name]: value }))
+              setDraft((current) => ({
+                ...(current ?? form),
+                [field.name]: value,
+              }))
             }
             value={form[field.name]}
           />
@@ -167,8 +184,8 @@ export function CardEditorScreen() {
           </p>
         )}
         <div className={stil.buttonRow}>
-          <button className={stil.button} type="submit">
-            Save training card
+          <button className={stil.button} disabled={saving} type="submit">
+            {saving ? "Saving…" : "Save training card"}
           </button>
           <Link className={stil.secondaryButton} to={RouteNames.CARD}>
             Cancel
@@ -363,8 +380,6 @@ const DD_MECHANISM = [
 ];
 
 // Obrazac nudi Urgent/Priority/Routine, a kartica biljezi P1/P2/P3.
-
-// Obrazac nudi Urgent/Priority/Routine, a kartica biljezi P1/P2/P3.
 const EVAC_FROM_PRIORITY = { P1: "Urgent", P2: "Priority", P3: "Routine" };
 
 const TQ_CORNERS = [
@@ -406,8 +421,10 @@ function has(list, value) {
 
 export function CardPrintScreen() {
   const { cardId } = useParams();
-  const [cards] = useStoredState(STORAGE_KEYS.CARDS, []);
-  const saved = cards.find((item) => item.id === cardId);
+  // "prazna" je prazan obrazac za ispis: nema se sto dohvatiti.
+  const { card: saved, loading } = useCard(
+    cardId === "prazna" ? undefined : cardId,
+  );
   // Kartica se ispisuje i bez podataka: prazne crte se popunjavaju rukom,
   // kao na papirnatom obrascu. Nepostojeci cardId daje praznu karticu.
   const card = saved ?? {};
@@ -421,6 +438,14 @@ export function CardPrintScreen() {
     drugs.filter((row) =>
       (row.category || "").toLowerCase().startsWith(category),
     );
+
+  if (loading) {
+    return (
+      <div className={stil.screen}>
+        <Loading label="Loading card…" />
+      </div>
+    );
+  }
 
   return (
     <div className={`${stil.screen} ${stil.printScreen}`}>
@@ -736,6 +761,3 @@ export function CardPrintScreen() {
     </div>
   );
 }
-
-// Prosjek preskace zapise bez bodova: stariji scenariji su biljezili samo
-// broj pogresaka, pa bi ih racunanje kao nulu lazno srusilo.

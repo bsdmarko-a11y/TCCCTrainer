@@ -1,0 +1,30 @@
+.ucitavanje {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  color: var(--ink-200);
+}
+
+.kruzic {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border: 2px solid var(--border-100);
+  border-top-color: var(--brand-500);
+  border-radius: 50%;
+  animation: vrtnja 0.8s linear infinite;
+}
+
+@keyframes vrtnja {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Bez vrtnje za one koji su iskljucili animacije; tekst ostaje. */
+@media (prefers-reduced-motion: reduce) {
+  .kruzic {
+    animation: none;
+  }
+}
