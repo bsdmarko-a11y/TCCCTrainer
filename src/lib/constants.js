@@ -15,6 +15,12 @@ export const RouteNames = {
   CARD_ONE: "/kartica/:cardId",
   CARD_PRINT: "/kartica/:cardId/ispis",
   PROGRESS: "/napredak",
+  VJEZBE: "/vjezbe",
+  VJEZBA_NEW: "/vjezbe/nova",
+  VJEZBA_ONE: "/vjezbe/:vjezbaId",
+  POLAZNICI: "/polaznici",
+  POLAZNIK_NEW: "/polaznici/novi",
+  POLAZNIK_ONE: "/polaznici/:polaznikId",
 };
 
 // Donja navigacija ima tocno pet odredista na svakom zaslonu (Korak 2).
@@ -34,7 +40,19 @@ export const STORAGE_KEYS = {
   SCENARIO_RUNS: "tccc.v1.scenario.runs",
   CARDS: "tccc.v1.cards",
   SETTINGS: "tccc.v1.settings",
+  VJEZBE: "tccc.v1.vjezbe",
+  POLAZNICI: "tccc.v1.polaznici",
+  VJEZBA_POLAZNIK: "tccc.v1.vjezbaPolaznik",
 };
+
+// Uloge polaznika na vjezbi.
+export const TRAINEE_ROLES = [
+  "Medic",
+  "Team leader",
+  "Rifleman",
+  "Casualty role-player",
+  "Instructor",
+];
 
 export const THEMES = {
   DARK: "dark",

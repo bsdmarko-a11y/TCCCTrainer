@@ -1,4 +1,68 @@
 {
+  "vjezbe": [
+    {
+      "id": "v1",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "naziv": "Lane 3, care under fire",
+      "datum": "2026-11-20",
+      "lokacija": "Lane 3",
+      "napomena": "Sample exercise served by json-server."
+    },
+    {
+      "id": "v2",
+      "updatedAt": "2026-11-13T08:00:00.000Z",
+      "naziv": "Night casualty evacuation",
+      "datum": "2026-11-13",
+      "lokacija": "Range B",
+      "napomena": ""
+    }
+  ],
+  "polaznici": [
+    {
+      "id": "p1",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "pozivniZnak": "ALPHA 1",
+      "uloga": "Medic"
+    },
+    {
+      "id": "p2",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "pozivniZnak": "BRAVO 2",
+      "uloga": "Rifleman"
+    },
+    {
+      "id": "p3",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "pozivniZnak": "CHARLIE 3",
+      "uloga": "Team leader"
+    }
+  ],
+  "vjezbaPolaznik": [
+    {
+      "id": "vp1",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "vjezbaId": "v1",
+      "polaznikId": "p1"
+    },
+    {
+      "id": "vp2",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "vjezbaId": "v1",
+      "polaznikId": "p2"
+    },
+    {
+      "id": "vp3",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "vjezbaId": "v2",
+      "polaznikId": "p1"
+    },
+    {
+      "id": "vp4",
+      "updatedAt": "2026-11-20T08:00:00.000Z",
+      "vjezbaId": "v2",
+      "polaznikId": "p3"
+    }
+  ],
   "cards": [
     {
       "id": "1001",
@@ -10,7 +74,9 @@
       "sex": "Male",
       "triageCategory": "",
       "medevacPriority": "P1",
-      "mechanism": ["GSW"],
+      "mechanism": [
+        "GSW"
+      ],
       "injuriesFound": [],
       "injurySites": "Left thigh",
       "vitals": [],
@@ -25,7 +91,7 @@
       ],
       "drugs": [],
       "notes": "Sample training card served by json-server.",
-      "lane": "Lane 3"
+      "vjezbaId": "v1"
     }
   ]
 }

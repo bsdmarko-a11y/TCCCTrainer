@@ -1,27 +1,21 @@
-// Servis za kartice unesrecenog: jedino sto zasloni uvoze.
-//
-// Izvor podataka bira se varijablom okoline, ne u kodu zaslona:
-//   VITE_DATA_SOURCE=api    -> json-server preko fetch-a (npm run dev:api)
-//   VITE_DATA_SOURCE=local  -> localStorage (zadano; tako radi i objavljena
-//                              aplikacija, jer staticki posluzitelj nema API)
+// Servis za kartice unesrecenog. Kartica pripada jednoj vjezbi (vjezbaId):
+// to je strana "n" veze vjezba 1:n kartice.
 
-import * as apiCards from "./cardService.api.js";
-import * as localCards from "./cardService.local.js";
+import { STORAGE_KEYS } from "../lib/constants.js";
+import { createCollection, stamp } from "./collection.js";
 
-export const DATA_SOURCE =
-  import.meta.env.VITE_DATA_SOURCE === "api" ? "api" : "local";
+const cards = createCollection({
+  storageKey: STORAGE_KEYS.CARDS,
+  path: "/cards",
+});
 
-const source = DATA_SOURCE === "api" ? apiCards : localCards;
+export const { getAll, getById, create, update, remove } = cards;
 
-export const { getAll, getById, create, update, remove } = source;
+export function getByVjezba(vjezbaId) {
+  return cards.getWhere("vjezbaId", vjezbaId);
+}
 
-// Nova kartica dobiva id i vrijeme izmjene ovdje, da oba izvora spremaju
-// isti oblik zapisa.
 export function save(form, existingId) {
-  const card = {
-    ...form,
-    id: existingId ?? Date.now().toString(),
-    updatedAt: new Date().toISOString(),
-  };
+  const card = stamp(form, existingId);
   return existingId ? update(existingId, card) : create(card);
 }
